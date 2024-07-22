@@ -1,1 +1,1 @@
-# skctpbcourse
+skct:pbcourse
