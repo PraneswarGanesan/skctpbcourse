@@ -1,0 +1,19 @@
+.Signupform{
+ 
+    display: flex;
+    justify-content: center;
+    margin-top: 10vh;
+    margin-left: 30vw;
+    width: 40vw;
+    height: 60vh;
+    background-color: #f5f0f0;
+    border-radius: 25px;
+}
+.Signupform{
+    padding-top: 75px;
+}
+
+.signupbutton{
+    margin-left: 50px;
+    background-color: rgb(50, 53, 50);
+}
