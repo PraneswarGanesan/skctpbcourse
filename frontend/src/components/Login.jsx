@@ -1,95 +1,64 @@
 import React, { useState } from 'react';
-import { Container, Form, Button, Alert } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { TextField, Button, MenuItem, Container, Typography } from '@mui/material';
 
-const Login = () => {
-  const [formData, setFormData] = useState({
-    username: '',
+const Login = ({ onLogin }) => {
+  const [form, setForm] = useState({
+    email: '',
     password: '',
+    role: '',
   });
+  const navigate = useNavigate();
 
-  const [formErrors, setFormErrors] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const handleInputChange = (e) => {
-    const { id, value } = e.target;
-    setFormData({
-      ...formData,
-      [id]: value,
-    });
-  };
-
-  const validateForm = () => {
-    let errors = {};
-    if (!formData.username.trim()) {
-      errors.username = 'Username is required';
-    }
-    if (!formData.password.trim()) {
-      errors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      errors.password = 'Password must be at least 6 characters long';
-    }
-    return errors;
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const errors = validateForm();
-    setFormErrors(errors);
-    if (Object.keys(errors).length === 0) {
-      setIsSubmitted(true);
+    if (form.email === 'test@test.com' && form.password === '123456789') {
+      const userInfo = { email: form.email, role: form.role };
+      onLogin(userInfo);
+      switch (form.role) {
+        case 'admin':
+          navigate('/admin-dashboard');
+          break;
+        case 'employee':
+          navigate('/employee-dashboard');
+          break;
+        case 'hr':
+          navigate('/hr-dashboard');
+          break;
+        case 'team_lead':
+          navigate('/team-lead-dashboard');
+          break;
+        default:
+          navigate('/');
+      }
+    } else {
+      alert('Invalid credentials');
     }
   };
 
   return (
-    <Container className="mt-5">
-      <h2 className="text-center">Login</h2>
-      {isSubmitted && (
-        <Alert variant="success">
-          Login successful! <br />
-          Username: {formData.username} <br />
-          Password: {formData.password}
-        </Alert>
-      )}
-      <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="username" className="mb-3">
-          <Form.Label>Username</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter username"
-            value={formData.username}
-            onChange={handleInputChange}
-            isInvalid={!!formErrors.username}
-          />
-          <Form.Control.Feedback type="invalid">
-            {formErrors.username}
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        <Form.Group controlId="password" className="mb-3">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Enter password"
-            value={formData.password}
-            onChange={handleInputChange}
-            isInvalid={!!formErrors.password}
-          />
-          <Form.Control.Feedback type="invalid">
-            {formErrors.password}
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        <Button variant="primary" type="submit" className="w-100">
-          Login
-        </Button>
-
-        <div className="mt-3 text-center">
-          <Link to="/signup">Don't have an account? Signup here</Link>
-        </div>
-      </Form>
+    <Container>
+      <Typography variant="h4">Login</Typography>
+      <form onSubmit={handleSubmit}>
+        <TextField name="email" label="Email" value={form.email} onChange={handleChange} fullWidth />
+        <TextField name="password" label="Password" type="password" value={form.password} onChange={handleChange} fullWidth />
+        <TextField name="role" label="Role" select value={form.role} onChange={handleChange} fullWidth>
+          <MenuItem value="admin">Admin</MenuItem>
+          <MenuItem value="employee">Employee</MenuItem>
+          <MenuItem value="hr">HR</MenuItem>
+          <MenuItem value="team_lead">Team Lead</MenuItem>
+        </TextField>
+        <Button type="submit" variant="contained" color="primary">Login</Button>
+      </form>
+      <Typography>
+        Don't have an account? <Link to="/signup">Sign up</Link>
+      </Typography>
     </Container>
   );
-}
+};
 
 export default Login;
