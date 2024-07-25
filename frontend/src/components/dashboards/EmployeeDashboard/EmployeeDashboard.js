@@ -1,7 +1,10 @@
 import React from 'react';
-
+import DashNav from '../DashNav';
 const EmployeeDashboard = () => {
-  return <div>Employee Dashboard</div>;
+  return <div>
+    <DashNav />
+    Employee Dashboard
+    </div>;
 };
 
 export default EmployeeDashboard;

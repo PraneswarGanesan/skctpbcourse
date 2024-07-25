@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&family=Work+Sans:wght@300;400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.Navbar {
+  background-color: transparent;
+  text-decoration: none;
+}
+
+.nav-content {
+  padding: 1vw 4vw;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+}
+
+.nav-content Link{
+  text-decoration: none;
+}
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
+
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.nav-right ul {
+  list-style-type: none;
+  display: flex;
+  gap: 15px;
+}
+
+.nav-right li {
+  margin: 2px;
+}
+
+.nav-icons {
+  display: flex;
+  gap: 25px;
+}
+
+.nav-center {
+  letter-spacing: 7px;
+}
+
+a {
+  color: inherit; /* this makes the link color the same as the text color */
+  text-decoration: none; /* this removes the underline */
+}
+
+.logo h1 {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+   /* Adjust the color as needed */
+}

@@ -1,7 +1,10 @@
 import React from 'react';
-
+import DashNav from '../DashNav';
 const TeamLeadDashboard = () => {
-  return <div>Team Lead Dashboard</div>;
+  return <div>
+    <DashNav
+    />
+    Team Lead Dashboard</div>;
 };
 
 export default TeamLeadDashboard;

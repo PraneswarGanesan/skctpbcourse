@@ -1,0 +1,100 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.signup-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--background-color);
+}
+
+.signup-card {
+  width: 850px;
+  height: 85vh;
+  background: var(--card-background-color);
+  border-radius: 8px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+}
+
+.signup-card.dark-mode {
+  --card-background-color: #333;
+  --text-color: #fff;
+}
+
+.signup-card.light-mode {
+  --card-background-color: #fff;
+  --text-color: #000;
+}
+
+.signup-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.signup-image img {
+  height: 90%;
+ width: 100%;
+  margin: 15px;
+}
+
+.signup-form {
+  margin-top: 15px;
+    margin-bottom: 2px;
+    letter-spacing: 2px;
+    width: 350px;
+  color: var(--text-color);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.signup-form h2 {
+  margin-bottom: 20px;
+  margin-left: 25px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  margin: 0 auto;
+}
+
+label {
+  font-size:11px;
+  font-weight: 600;
+  padding: 5px 0;
+}
+
+.MuiOutlinedInput-root {
+  width: 100%;
+  margin-bottom: 1px;
+  height: 40px;
+}
+
+#button {
+  width: 100px;
+  margin-left: 70px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  background: rgb(235, 80, 238);
+}
+
+.message {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}

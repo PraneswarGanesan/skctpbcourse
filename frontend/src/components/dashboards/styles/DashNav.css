@@ -1,0 +1,18 @@
+.dashnav-container {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #0e89ac; /* Background color of the nav */
+    border-bottom: 1px solid #ddd; /* Border at the bottom of the nav */
+  }
+  
+  .home-link {
+    margin-right: 20px; /* Space between the home icon and the content */
+    text-decoration: none;
+  }
+  
+  .dashnav-content {
+    flex: 1; /* Allows the content to take up the remaining space */
+    font-size: 18px; /* Adjust font size as needed */
+  }
+  

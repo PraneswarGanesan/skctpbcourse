@@ -3,11 +3,13 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Signup from './components/Signup';
 import Login from './components/Login';
 import Home from './components/Home';
+import About from './components/About';
+import Contact from './components/contact';
 import AdminDashboard from './components/dashboards/AdminDashboard/AdminDashboard';
 import EmployeeDashboard from './components/dashboards/EmployeeDashboard/EmployeeDashboard';
 import HRDashboard from './components/dashboards/HRDashboard/HRDashboard';
 import TeamLeadDashboard from './components/dashboards/TeamLeadDashboard/TeamLeadDashboard';
-
+import Navbar from './components/Navbar'; // Import Navbar
 const App = () => {
   const [user, setUser] = useState(null);
 
@@ -21,6 +23,7 @@ const App = () => {
 
   return (
     <Router>
+   
       <Routes>
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
@@ -30,6 +33,8 @@ const App = () => {
         <Route path="/team-lead-dashboard" element={user?.role === 'team_lead' ? <TeamLeadDashboard /> : <Navigate to="/login" />} />
         <Route path="/" element={<Home user={user} onLogout={handleLogout} />} />
         <Route path='/home' element={<Home user={user} onLogout={handleLogout} />} />
+        <Route path='/about' element={<About/>}/>
+        <Route path='/contact' element={<Contact/>}/>
       </Routes>
     </Router>
   );
