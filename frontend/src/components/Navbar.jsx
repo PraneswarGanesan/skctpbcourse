@@ -1,24 +1,24 @@
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import '../styles/Navbar.css'; // Import the CSS file
+import { Link, useNavigate } from 'react-router-dom';
+import '../styles/Navbar.css';
 
 const Navbar = () => {
   const navigate = useNavigate();
 
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
+
   return (
-    <div className="Navbar">
-      <div className="nav-content">
-        <div className="nav-left">
-          <div className="logo">
-            <Link to="/"><h1>Workwave</h1></Link>
-          </div>
+    <div className='Navbar'>
+      <div className='nav-content'>
+        <div className='nav-left'>
+          <Link to="/" className='nav-title'>WorkForce</Link>
         </div>
-        <div className="nav-right">
-          <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/about">About</Link></li>
-            <li><Link to="/contact">Contact</Link></li>
-          </ul>
+        <div className='nav-right'>
+          <p className='nav-item' onClick={() => handleNavigation('/')}>Home</p>
+          <p className='nav-item' onClick={() => handleNavigation('/about')}>About</p>
+          <p className='nav-item' onClick={() => handleNavigation('/contact')}>Contact</p>
         </div>
       </div>
     </div>

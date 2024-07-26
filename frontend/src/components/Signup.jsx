@@ -1,30 +1,8 @@
 import React, { useState } from 'react';
-import { TextField, Button, Typography, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Brightness4 as MoonIcon, Brightness7 as SunIcon } from '@mui/icons-material';
-import '../styles/Signup.css';
 import illustration from '../assets/illu-1.png';
-import { styled } from '@mui/material/styles';
-
-const StyledTextField = styled(TextField)(({ theme }) => ({
-  '& .MuiInputBase-root': {
-    color: theme.palette.mode === 'dark' ? '#fff' : '#000',
-  },
-  '& .MuiInputLabel-root': {
-    color: theme.palette.mode === 'dark' ? '#fff' : '#000',
-  },
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': {
-      borderColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
-    },
-    '&:hover fieldset': {
-      borderColor: theme.palette.mode === 'dark' ? '#bb86fc' : '#1976d2',
-    },
-    '&.Mui-focused fieldset': {
-      borderColor: theme.palette.mode === 'dark' ? '#bb86fc' : '#1976d2',
-    },
-  },
-}));
+import { Typography, TextField, Button, MenuItem } from '@mui/material';
+import '../styles/Signup.css';
 
 const Signup = () => {
   const [form, setForm] = useState({
@@ -33,9 +11,9 @@ const Signup = () => {
     username: '',
     email: '',
     password: '',
+    role: '',
+    company: '',
   });
-
-  const [darkMode, setDarkMode] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -45,100 +23,60 @@ const Signup = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(form);
-    nav('/home');
-  };
-
-  const toggleTheme = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.style.setProperty(
-      '--background-color',
-      darkMode ? '#ffffff' : '#1e1e1e'
-    );
+    nav('/');
   };
 
   return (
-    <div className={`signup-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
-      <div className="theme-toggle">
-        <IconButton onClick={toggleTheme} color="inherit">
-          {darkMode ? <SunIcon /> : <MoonIcon />}
-        </IconButton>
+    <div className='signup-container'>
+      <div className='signup-bg'></div>
+      <div className='signup-img'>
+        <img src={illustration} alt="Illustration" />
       </div>
-      <div className={`signup-card ${darkMode ? 'dark-mode' : 'light-mode'}`}>
-        <div className="signup-image">
-          <img src={illustration} alt="Illustration" />
-        </div>
-        <div className="signup-form">
-          <Typography variant="h4" style={{marginLeft: '25px'}}>
-            Signup
-          </Typography>
-          <form onSubmit={handleSubmit}>
-            <label>First Name</label>
-            <StyledTextField
-              name="firstName"
+      <div className='signup-card'>
+        <div className='signup-form'>
+          <div className="title">
+            <Typography variant='h4'><b>Signup</b></Typography>
+          </div>
+          <form className="form" onSubmit={handleSubmit}>
+            <label className='signuplabel'>First Name</label>
+            <TextField className='signup-input' name='firstName' type='text' variant='outlined' value={form.firstName} onChange={handleChange} required />
+            <label className='signuplabel'>Last Name</label>
+            <TextField className='signup-input'  name='lastName' type='text' variant='outlined' value={form.lastName} onChange={handleChange} required />
+            <label className='signuplabel' >Username</label>
+            <TextField className='signup-input'  name='username' type='text' variant='outlined' value={form.username} onChange={handleChange} required />
+            <label className='signuplabel' >Role</label>
+            <TextField
+              name="role"
+              select
               variant="outlined"
               required
-              value={form.firstName}
+              value={form.role}
               onChange={handleChange}
-            
-            />
-            <label>Last Name</label>
-            <StyledTextField
-              name="lastName"
-              variant="outlined"
-              required
-              value={form.lastName}
-              onChange={handleChange}
-            
-            />
-            <label>Username</label>
-            <StyledTextField
-              name="username"
-              variant="outlined"
-              required
-              value={form.username}
-              onChange={handleChange}
-             
-            />
-            <label>Email</label>
-            <StyledTextField
-              name="email"
-              type="email"
-              variant="outlined"
-              required
-              value={form.email}
-              onChange={handleChange}
-              
-            />
-            <label>Password</label>
-            <StyledTextField
-              name="password"
-              type="password"
-              variant="outlined"
-              required
-              value={form.password}
-              onChange={handleChange}
-               
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              id="button"
+              className='signup-input' 
             >
-              Signup
-            </Button>
+              <MenuItem value="admin">Admin</MenuItem>
+              <MenuItem value="employee">Employee</MenuItem>
+              <MenuItem value="hr">HR</MenuItem>
+              <MenuItem value="team_lead">Team Lead</MenuItem>
+            </TextField>
+            <label  className='signuplabel' >Company</label>
+            <TextField className='signup-input'  name='company' type='text' variant='outlined' value={form.company} onChange={handleChange} required />
+            <label className='signuplabel'>Email</label>
+            <TextField  className='signup-input'  name='email' type='email' variant='outlined' value={form.email} onChange={handleChange} required />
+            <label className='signuplabel' >Password</label>
+            <TextField className='signup-input'  name='password' type='password' variant='outlined' value={form.password} onChange={handleChange} required />
+            <Button type='submit' variant='contained' color='primary' fullWidth id="button">Signup</Button>
+            <Typography className="message">
+              Already have an account?{' '}
+              <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => nav('/login')}>
+                Login
+              </span>
+            </Typography>
           </form>
-          <Typography className="message">
-            Already have an account?{' '}
-            <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => nav('/login')}>
-              Login
-            </span>
-          </Typography>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default Signup;

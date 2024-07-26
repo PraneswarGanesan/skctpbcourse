@@ -1,103 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&family=Work+Sans:wght@300;400;600&display=swap');
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: var(--background-color);
-  }
-  
-  .login-card {
-    width: 850px;
-    height: 70vh;
-    background: var(--card-background-color);
-    border-radius: 8px;
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-    display: flex;
-  }
-  
-  .login-card.dark-mode {
-    --card-background-color: #333;
-    --text-color: #fff;
-  }
-  
-  .login-card.light-mode {
-    --card-background-color: #fff;
-    --text-color: #000;
-  }
-  
-  .login-image {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #fff;
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
-  }
-  
-  .login-image img {
-    height: 90%;
-    width: 100%;
-    margin: 15px;
-    background-color: #fff;
-  }
-  
-  .login-form {
-    margin-top: 15px;
-    margin-bottom: 2px;
-    letter-spacing: 2px;
-    width: 350px;
-    color: var(--text-color);
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-  }
-  
-  .login-form h2 {
-    margin-bottom: 20px;
-    margin-left: 25px;
-  }
-  
-  form {
-   padding-top: 8px;
-    display: flex;
-    flex-direction: column;
-    width: 250px;
-    margin: 0 auto;
-  }
-  
-  label {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 5px 0;
-  }
-  
-  .MuiOutlinedInput-root {
-    width: 100%;
-    margin-bottom: 1px;
-    height: 40px;
-  }
-  
-  #button {
-    width: 100px;
-    margin-left: 70px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    background: rgb(235, 80, 238);
-  }
-  
-  .message {
-    margin-top: 20px;
-    text-align: center;
-  }
-  
-  .theme-toggle {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-  }
-  
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  position: relative;
+}
+
+.login-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #FFB6D9; /* Background color behind the image */
+  z-index: -2; /* Ensure it's behind both the image and the card */
+}
+
+.login-img {
+  position: absolute;
+  top: 0%;
+  left: 10%;
+  width: 80%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.login-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.845);
+  border-radius: 8px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  padding: 20px;
+  z-index: 1;
+  backdrop-filter: blur(5px);
+  position: absolute;
+  top: 20%;
+  left: 60%;
+}
+
+.login-form {
+  width: 100%;
+  color: #000;
+}
+
+.login-form .title {
+  margin-bottom: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 12px;
+  font-weight: 700;
+  margin: 5px 0;
+}
+
+.MuiOutlinedInput-root {
+  margin-bottom: 15px;
+  height: 40px;
+}
+
+#button {
+  margin-top: 10px;
+  background: #FF76CE;
+  box-shadow: none;
+}
+
+.message {
+  margin-top: 20px;
+  text-align: center;
+}
