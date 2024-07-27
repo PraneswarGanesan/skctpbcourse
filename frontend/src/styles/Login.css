@@ -67,13 +67,12 @@ form {
   flex-direction: column;
 }
 
-label {
+.login-form label {
   font-size: 12px;
   font-weight: 700;
   margin: 5px 0;
 }
-
-.MuiOutlinedInput-root {
+.login-form .MuiOutlinedInput-root {
   margin-bottom: 15px;
   height: 40px;
 }

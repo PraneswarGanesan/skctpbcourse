@@ -1,12 +1,76 @@
-import React from 'react'
-import EmployeeSidePanel from '../EmployeeSidePanel'
+// src/components/dashboards/AdminDashboard/components/Profile.js
+import React, { useState } from 'react';
+import SidePanel from '../EmployeeSidePanel';
+import { TextField, Button, Grid, Card, CardContent } from '@mui/material';
+
 const Profile = () => {
+  const [profile, setProfile] = useState({
+    name: 'Employee',
+    email: 'Employee@example.com',
+    role: 'employee',
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProfile({ ...profile, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle profile update logic
+    console.log('Profile updated:', profile);
+  };
+
   return (
     <div>
-        <EmployeeSidePanel />
-      Profile
+      <SidePanel />
+      <h2>Profile</h2>
+      <Card>
+        <CardContent>
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Name"
+                  name="name"
+                  variant="outlined"
+                  fullWidth
+                  value={profile.name}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Email"
+                  name="email"
+                  type="email"
+                  variant="outlined"
+                  fullWidth
+                  value={profile.email}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label="Role"
+                  name="role"
+                  variant="outlined"
+                  fullWidth
+                  value={profile.role}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Button type="submit" variant="contained" color="primary">
+                  Save
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
+        </CardContent>
+      </Card>
     </div>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;
