@@ -56,7 +56,6 @@ const Signup = () => {
             >
               <MenuItem value="admin">Admin</MenuItem>
               <MenuItem value="employee">Employee</MenuItem>
-              <MenuItem value="hr">HR</MenuItem>
               <MenuItem value="team_lead">Team Lead</MenuItem>
               <MenuItem value="product_manager">Product Manager</MenuItem>
             </TextField>
