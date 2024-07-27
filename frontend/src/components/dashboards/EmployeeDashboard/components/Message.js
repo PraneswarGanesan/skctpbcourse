@@ -1,12 +1,12 @@
 import React from 'react'
 import EmployeeSidePanel from '../EmployeeSidePanel'
-const Profile = () => {
+
+const Message = () => {
   return (
     <div>
         <EmployeeSidePanel />
-      Profile
-    </div>
+        Message</div>
   )
 }
 
-export default Profile
+export default Message

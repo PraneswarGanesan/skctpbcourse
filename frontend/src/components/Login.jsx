@@ -18,13 +18,10 @@ const Login = ({ onLogin }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (form.email === 'test@test.com' && form.password === '123456789') {
       const userInfo = { email: form.email, role: form.role };
       onLogin(userInfo);
       navigate('/');
-    } else {
-      alert('Invalid credentials');
-    }
+   
   };
 
   return (
@@ -58,6 +55,7 @@ const Login = ({ onLogin }) => {
                   <MenuItem value="employee">Employee</MenuItem>
                   <MenuItem value="hr">HR</MenuItem>
                   <MenuItem value="team_lead">Team Lead</MenuItem>
+                  <MenuItem value="product_manager">Product Manager</MenuItem>
                 </TextField>
                 <Button type="submit" variant="contained" color="primary" fullWidth id="button">Login</Button>
                 <Typography className="message">

@@ -1,39 +1,36 @@
 // src/components/dashboards/AdminDashboard/AdminDashboard.js
 import React from 'react';
+import AdminSidePanel from './AdminSidePanel';
 import { Box, CssBaseline } from '@mui/material';
-import SidePanel from '../SidePanel';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Category from './components/Category';
 import Profile from './components/Profile';
 import Message from './components/Message';
-import Dashboard from './components/DashBoard';
+import DashBoard from './components/DashBoard';
 import ManageUsers from './components/ManageUsers';
 
-const AdminDashboard = ({ path }) => {
-  console.log('AdminDashboard path:', path); // Log the path to debug
-
-  const renderComponent = () => {
-    switch (path) {
-      case 'manage-user':
-        return <ManageUsers />;
-      case 'category':
-        return <Category />;
-      case 'message':
-        return <Message />;
-      case 'profile':
-        return <Profile />;
-      default:
-        return <Dashboard />;
-    }
-  };
-
+const AdminDashboard = ({ user }) => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <SidePanel role="admin" />
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        {renderComponent()}
+      <AdminSidePanel user={user} />
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          bgcolor: '',
+          p: 3,
+        }}
+      >
+        <Routes>
+          <Route path="/" element={<Navigate to="dashboard" />} />
+          <Route path="dashboard" element={<DashBoard />} />
+          <Route path="manage-user" element={<ManageUsers />} />
+          <Route path="category" element={<Category />} />
+          <Route path="message" element={<Message />} />
+          <Route path="profile" element={<Profile />} />
+        </Routes>
       </Box>
-      <h1>dashboard</h1>
     </Box>
   );
 };

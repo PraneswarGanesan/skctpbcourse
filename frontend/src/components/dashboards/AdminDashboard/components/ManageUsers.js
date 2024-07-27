@@ -1,5 +1,6 @@
-import React from 'react'
-import SidePanel from '../../SidePanel'
+// src/components/dashboards/AdminDashboard/components/ManageUsers.js
+import React from 'react';
+import SidePanel from '../AdminSidePanel'; // Corrected import path
 
 const ManageUsers = () => {
   return (
@@ -7,7 +8,7 @@ const ManageUsers = () => {
       <SidePanel />
       ManageUsers
     </div>
-  )
-}
+  );
+};
 
-export default ManageUsers
+export default ManageUsers;

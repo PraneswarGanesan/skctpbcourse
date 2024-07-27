@@ -45,11 +45,14 @@ const Home = ({ user, onLogout }) => {
         case 'team_lead':
           navigate('/team-lead-dashboard');
           break;
+        case 'product_manager':
+          navigate('/product-manager-dashboard');
+          break;
         default:
           navigate('/');
       }
     } else {
-      navigate('/login');
+      navigate('/login');  
     }
   };
 

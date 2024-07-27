@@ -58,6 +58,7 @@ const Signup = () => {
               <MenuItem value="employee">Employee</MenuItem>
               <MenuItem value="hr">HR</MenuItem>
               <MenuItem value="team_lead">Team Lead</MenuItem>
+              <MenuItem value="product_manager">Product Manager</MenuItem>
             </TextField>
             <label  className='signuplabel' >Company</label>
             <TextField className='signup-input'  name='company' type='text' variant='outlined' value={form.company} onChange={handleChange} required />

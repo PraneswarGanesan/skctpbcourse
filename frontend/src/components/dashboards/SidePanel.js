@@ -4,11 +4,8 @@ import { Link } from 'react-router-dom';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
 import { Home, People, Category, Message, AccountCircle } from '@mui/icons-material';
 import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
-// import './styles/SidePanel.css';
 
 const SidePanel = ({ role }) => {
-  console.log('SidePanel role:', role); // Log the role to debug
-
   const renderMenuItems = () => {
     switch (role) {
       case 'admin':
@@ -41,7 +38,6 @@ const SidePanel = ({ role }) => {
           </>
         );
       case 'employee':
-        // Add menu items for employee
         return (
           <>
             <ListItem button component={Link} to="/employee-dashboard/home">
@@ -63,7 +59,6 @@ const SidePanel = ({ role }) => {
           </>
         );
       case 'hr':
-        // Add menu items for HR
         return (
           <>
             <ListItem button component={Link} to="/hr-dashboard/home">
@@ -85,7 +80,6 @@ const SidePanel = ({ role }) => {
           </>
         );
       case 'team_lead':
-        // Add menu items for team lead
         return (
           <>
             <ListItem button component={Link} to="/team-lead-dashboard/home">

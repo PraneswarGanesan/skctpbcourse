@@ -1,32 +1,26 @@
 // src/components/dashboards/TeamLeadDashboard/TeamLeadDashboard.js
 import React from 'react';
 import { Box, CssBaseline } from '@mui/material';
-import SidePanel from '../SidePanel';
+import TeamLeadSidePanel from './TeamLeadSidePanel';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './components/DashBoard';
 import ManageTeam from './components/ManageTeam';
-import ShiftScheduling from './components/ShiftScheduling';
 import Profile from './components/Profile';
+import ShiftScheduling from './components/ShiftScheduling';
 
-const TeamLeadDashboard = ({ path }) => {
-  const renderComponent = () => {
-    switch (path) {
-      case 'manage-team':
-        return <ManageTeam />;
-      case 'shift-scheduling':
-        return <ShiftScheduling />;
-      case 'profile':
-        return <Profile />;
-      default:
-        return <Dashboard />;
-    }
-  };
-
+const TeamLeadDashboard = () => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <SidePanel role="team_lead" />
+      <TeamLeadSidePanel />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        {renderComponent()}
+        <Routes>
+          <Route path="/" element={<Navigate to="dashboard" />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="manage-team" element={<ManageTeam />} />
+          <Route path="shift-scheduling" element={<ShiftScheduling />} />
+          <Route path="profile" element={<Profile />} />
+        </Routes>
       </Box>
     </Box>
   );
