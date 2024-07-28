@@ -1,35 +1,59 @@
 // src/components/dashboards/TeamLeadDashboard/components/ShiftScheduling.js
 import React, { useState } from 'react';
-import { Box, Typography, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem } from '@mui/material';
+import { Box, Typography, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, List, ListItem, ListItemText } from '@mui/material';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import TeamLeadSidePanel from '../TeamLeadSidePanel';
-import {List,ListItem, ListItemText} from '@mui/material';
 
-const employees = [
-  { id: 1, name: 'John Doe' },
-  { id: 2, name: 'Jane Smith' },
-  { id: 3, name: 'Alice Johnson' },
+const dummyRequests = [
+  { id: 1, employee: 'John Doe', request: 'Request for shift change', type: 'shift', status: 'pending' },
+  { id: 2, employee: 'Jane Smith', request: 'Request for time off', type: 'timeOff', status: 'pending' },
 ];
 
 const ShiftScheduling = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [open, setOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
   const [shifts, setShifts] = useState([]);
+  const [requests, setRequests] = useState(dummyRequests);
+  const [completedRequests, setCompletedRequests] = useState([]);
+  const [timeOffOpen, setTimeOffOpen] = useState(false);
+  const [timeOffEmployee, setTimeOffEmployee] = useState('');
 
-  const handleDateChange = date => setSelectedDate(date);
+  const handleDateChange = (date) => setSelectedDate(date);
 
   const handleOpenDialog = () => setOpen(true);
 
   const handleCloseDialog = () => {
     setOpen(false);
     setSelectedEmployee('');
+    setSelectedTime('');
   };
 
   const handleAssignShift = () => {
-    setShifts([...shifts, { date: selectedDate, employee: selectedEmployee }]);
+    setShifts([...shifts, { date: selectedDate, employee: selectedEmployee, time: selectedTime }]);
     handleCloseDialog();
+  };
+
+  const handleAcceptRequest = (requestId) => {
+    setRequests(requests.filter(request => request.id !== requestId));
+    const acceptedRequest = requests.find(request => request.id === requestId);
+    setCompletedRequests([...completedRequests, { ...acceptedRequest, status: 'accepted' }]);
+  };
+
+  const handleOpenTimeOffDialog = (employee) => {
+    setTimeOffEmployee(employee);
+    setTimeOffOpen(true);
+  };
+
+  const handleCloseTimeOffDialog = () => {
+    setTimeOffOpen(false);
+    setTimeOffEmployee('');
+  };
+
+  const handleTimeOffRequest = () => {
+    handleCloseTimeOffDialog();
   };
 
   return (
@@ -49,7 +73,40 @@ const ShiftScheduling = () => {
             {shifts.map((shift, index) => (
               <ListItem key={index}>
                 <ListItemText
-                  primary={`Date: ${shift.date.toDateString()}, Employee: ${shift.employee}`}
+                  primary={`Date: ${shift.date.toDateString()}, Time: ${shift.time}, Employee: ${shift.employee}`}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
+        <Paper sx={{ p: 2, mt: 2 }}>
+          <Typography variant="h6">Pending Employee Requests</Typography>
+          <List>
+            {requests.filter(request => request.status === 'pending').map((request, index) => (
+              <ListItem key={index}>
+                <ListItemText
+                  primary={`Employee: ${request.employee}, Request: ${request.request}`}
+                />
+                {request.type === 'shift' ? (
+                  <Button variant="contained" color="primary" onClick={() => handleAcceptRequest(request.id)}>
+                    Accept
+                  </Button>
+                ) : (
+                  <Button variant="contained" color="secondary" onClick={() => handleOpenTimeOffDialog(request.employee)}>
+                    Apply Time Off
+                  </Button>
+                )}
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
+        <Paper sx={{ p: 2, mt: 2 }}>
+          <Typography variant="h6">Completed Requests</Typography>
+          <List>
+            {completedRequests.map((request, index) => (
+              <ListItem key={index}>
+                <ListItemText
+                  primary={`Employee: ${request.employee}, Request: ${request.request}, Status: ${request.status}`}
                 />
               </ListItem>
             ))}
@@ -60,26 +117,49 @@ const ShiftScheduling = () => {
           <DialogContent>
             <Typography variant="body1">Date: {selectedDate.toDateString()}</Typography>
             <TextField
-              select
               label="Employee"
               value={selectedEmployee}
-              onChange={e => setSelectedEmployee(e.target.value)}
+              onChange={(e) => setSelectedEmployee(e.target.value)}
               fullWidth
               sx={{ mt: 2 }}
-            >
-              {employees.map(employee => (
-                <MenuItem key={employee.id} value={employee.name}>
-                  {employee.name}
-                </MenuItem>
-              ))}
-            </TextField>
+            />
+            <TextField
+              label="Time"
+              type="time"
+              value={selectedTime}
+              onChange={(e) => setSelectedTime(e.target.value)}
+              fullWidth
+              sx={{ mt: 2 }}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog} color="primary">
               Cancel
             </Button>
-            <Button onClick={handleAssignShift} color="primary" disabled={!selectedEmployee}>
+            <Button onClick={handleAssignShift} color="primary" disabled={!selectedEmployee || !selectedTime}>
               Assign
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog open={timeOffOpen} onClose={handleCloseTimeOffDialog}>
+          <DialogTitle>Time Off Request</DialogTitle>
+          <DialogContent>
+            <Typography variant="body1">Employee: {timeOffEmployee}</Typography>
+            <TextField
+              label="Reason"
+              fullWidth
+              sx={{ mt: 2 }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseTimeOffDialog} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleTimeOffRequest} color="primary">
+              Submit
             </Button>
           </DialogActions>
         </Dialog>

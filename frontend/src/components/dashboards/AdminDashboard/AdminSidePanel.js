@@ -8,14 +8,21 @@ import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 const AdminSidePanel = () => {
   return (
     <Drawer
-      sx={{
+    sx={{
+      width: 240,
+      flexShrink: 0,
+      '& .MuiDrawer-paper': {
         width: 240,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: 240,
-          boxSizing: 'border-box',
-        },
-      }}
+        boxSizing: 'border-box',
+        backgroundColor: '#134B70', // Background color of the drawer
+      },
+      '& .MuiListItem-root': {
+        color: '#fff', // Text color of the list items
+      },
+      '& .MuiListItemIcon-root': {
+        color: '#fff', // Icon color of the list items
+      },
+    }}
       variant="permanent"
       anchor="left"
     >

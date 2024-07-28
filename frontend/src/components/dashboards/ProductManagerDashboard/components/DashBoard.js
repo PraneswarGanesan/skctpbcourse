@@ -1,11 +1,9 @@
-// src/components/ProductManagerDashboard/Dashboard.js
 import React from 'react';
 import ProductManagerSidePanel from '../ProductManagerSidePanel';
 import { Box, Typography, Paper, Grid, Divider } from '@mui/material';
 import { styled } from '@mui/system';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
-// Sample data for pie chart
 const pieData = [
   { name: 'Teams', value: 8 },
   { name: 'Projects', value: 15 },
@@ -13,10 +11,8 @@ const pieData = [
   { name: 'Employees Working', value: 50 },
 ];
 
-// Colors for pie chart segments
 const COLORS = ['#FF9999', '#66B2FF', '#99FF99', '#FFCC99'];
 
-// Styled components for improved visuals
 const StyledPaper = styled(Paper)({
   padding: '16px',
   borderRadius: '12px',
