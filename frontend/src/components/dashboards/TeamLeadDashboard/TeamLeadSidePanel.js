@@ -1,4 +1,4 @@
-// src/components/dashboards/TeamLeadDashboard/SidePanel.js
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
@@ -15,13 +15,13 @@ const TeamLeadSidePanel = () => {
       '& .MuiDrawer-paper': {
         width: drawerWidth,
         boxSizing: 'border-box',
-        backgroundColor: '#134B70', // Background color of the drawer
+        backgroundColor: '#134B70', 
       },
       '& .MuiListItem-root': {
-        color: '#fff', // Text color of the list items
+        color: '#fff', 
       },
       '& .MuiListItemIcon-root': {
-        color: '#fff', // Icon color of the list items
+        color: '#fff', 
       },
     }}
       variant="permanent"

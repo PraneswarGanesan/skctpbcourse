@@ -1,4 +1,4 @@
-// src/components/dashboards/ProductManagerDashboard/ProductManagerSidePanel.js
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
@@ -16,13 +16,13 @@ const ProductManagerSidePanel = () => {
         '& .MuiDrawer-paper': {
           width: drawerWidth,
           boxSizing: 'border-box',
-          backgroundColor: '#134B70', // Background color of the drawer
+          backgroundColor: '#134B70', 
         },
         '& .MuiListItem-root': {
-          color: '#fff', // Text color of the list items
+          color: '#fff', 
         },
         '& .MuiListItemIcon-root': {
-          color: '#fff', // Icon color of the list items
+          color: '#fff', 
         },
       }}
       variant="permanent"
@@ -54,7 +54,7 @@ const ProductManagerSidePanel = () => {
           <ListItemText primary="Profile" />
         </ListItem>
       </List>
-      <Divider sx={{ backgroundColor: '#444' }} /> {/* Divider color */}
+      <Divider sx={{ backgroundColor: '#444' }} /> 
     </Drawer>
   );
 };

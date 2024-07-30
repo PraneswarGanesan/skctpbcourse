@@ -3,17 +3,16 @@ import SidePanel from '../AdminSidePanel';
 import { TextField, List, ListItem, ListItemText, Card, CardContent, Box, Button, Typography, Divider, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-// Sample data for demonstration
 const sampleUsers = [
   { id: 1, name: 'John Doe' },
   { id: 2, name: 'Jane Smith' },
-  // Add more users if needed
+ 
 ];
 
 const sampleMessages = [
   { id: 1, from: 'John Doe', content: 'Meeting at 10 AM' },
   { id: 2, from: 'Jane Smith', content: 'System maintenance at 2 PM' },
-  // Add more messages if needed
+  
 ];
 
 const Message = () => {
@@ -24,7 +23,7 @@ const Message = () => {
   const [newMessage, setNewMessage] = useState('');
 
   useEffect(() => {
-    // Fetch messages and users from API or use sample data
+    
     setMessages(sampleMessages);
     setUsers(sampleUsers);
   }, []);
@@ -41,7 +40,7 @@ const Message = () => {
 
   const handleSendMessage = () => {
     if (selectedUser && newMessage.trim()) {
-      // Simulate sending message
+     
       setMessages([
         ...messages,
         { id: messages.length + 1, from: 'Admin', content: newMessage, to: selectedUser.name }

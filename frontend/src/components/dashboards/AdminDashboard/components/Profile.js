@@ -1,4 +1,4 @@
-// src/components/dashboards/AdminDashboard/components/Profile.js
+
 import React, { useState } from 'react';
 import SidePanel from '../AdminSidePanel';
 import { TextField, Button, Grid, Card, CardContent } from '@mui/material';
@@ -17,7 +17,7 @@ const Profile = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle profile update logic
+  
     console.log('Profile updated:', profile);
   };
 

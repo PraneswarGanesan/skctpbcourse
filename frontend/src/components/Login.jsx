@@ -26,7 +26,7 @@ const Login = ({ onLogin }) => {
 
   return (
     <div className='Login'>
-      <div className='login-bg'></div> {/* Background Color */}
+      <div className='login-bg'></div> 
       <div className='login'>
         <div className='login-container'>
           <div className='login-img'>

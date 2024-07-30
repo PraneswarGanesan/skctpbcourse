@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import SidePanel from '../AdminSidePanel'; // Corrected import path
+import SidePanel from '../AdminSidePanel'; 
 import { Box, Card, CardContent, Typography, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Paper } from '@mui/material';
 
-// Sample data for demonstration
 const sampleData = {
   HR: 5,
   ProductManagers: 3,
@@ -10,11 +9,10 @@ const sampleData = {
   TeamLeads: 4,
 };
 
-// Sample user list
 const userList = [
   { id: 1, name: 'John Doe', role: 'HR', email: 'john.doe@example.com' },
   { id: 2, name: 'Jane Smith', role: 'Employee', email: 'jane.smith@example.com' },
-  // Add more sample users as needed
+
 ];
 
 const ManageUsers = () => {
@@ -22,18 +20,18 @@ const ManageUsers = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    // Simulate fetching data from an API or database
+    
     setUserStats(sampleData);
     setUsers(userList);
   }, []);
 
   const handleEdit = (userId) => {
-    // Handle edit functionality here
+
     console.log('Edit user with ID:', userId);
   };
 
   const handleDelete = (userId) => {
-    // Handle delete functionality here
+   
     console.log('Delete user with ID:', userId);
   };
 

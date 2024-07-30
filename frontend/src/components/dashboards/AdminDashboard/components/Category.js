@@ -1,4 +1,4 @@
-// src/components/dashboards/AdminDashboard/components/Category.js
+
 import React, { useState, useEffect } from 'react';
 import SidePanel from '../AdminSidePanel';
 import { TextField, List, ListItem, ListItemText, Divider } from '@mui/material';
@@ -8,7 +8,6 @@ const Category = () => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    // Fetch categories from API or use sample data
     setCategories([
       { id: 1, name: 'IT' },
       { id: 2, name: 'HR' },

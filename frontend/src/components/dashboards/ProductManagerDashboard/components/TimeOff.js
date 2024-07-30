@@ -2,7 +2,6 @@ import React from 'react';
 import { Box, Typography, Paper, Button, List, ListItem, ListItemText } from '@mui/material';
 import ProductManagerSidePanel from '../ProductManagerSidePanel';
 
-// Sample data for time-offs
 const timeOffRequests = [
   { id: 1, employee: 'John Doe', date: '2024-07-25', status: 'Pending' },
   { id: 2, employee: 'Jane Smith', date: '2024-07-26', status: 'Approved' },
@@ -10,7 +9,6 @@ const timeOffRequests = [
 
 const TimeOffs = () => {
   const handleAccept = (id) => {
-    // Logic to accept the time-off request
     console.log('Accepting time-off request with id:', id);
   };
 

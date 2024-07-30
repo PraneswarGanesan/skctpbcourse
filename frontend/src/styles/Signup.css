@@ -71,17 +71,18 @@ form {
 
 .signuplabel{
 
-  font-size: 12px; /* Reduced font size */
-  font-weight: 600; /* Reduced font weight */
- margin-bottom: 15px;
+  font-size: 12px; 
+  font-weight: 600;
+ margin-bottom: 20px;
   margin-left: 15px;
+  margin-top: 20px;
 }
 
 .signup-input{
   margin-top: 2px;
-  margin-bottom: 10px; /* Increased margin-bottom */
-  height: 20px; /* Adjusted height */
-  width: 300px; /* Adjusted width */
+  margin-bottom: 70px; 
+  height: 20px;
+  width: 300px;
   justify-content: center;
   margin-left: 15px;
 }

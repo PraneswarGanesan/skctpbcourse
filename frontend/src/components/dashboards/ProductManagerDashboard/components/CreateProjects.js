@@ -1,4 +1,3 @@
-// src/components/ProductManagerDashboard/CreateProjects.js
 import React, { useState } from 'react';
 import ProductManagerSidePanel from '../ProductManagerSidePanel';
 import { Box, Typography, Paper, TextField, Button, List, ListItem, ListItemText, MenuItem, IconButton } from '@mui/material';

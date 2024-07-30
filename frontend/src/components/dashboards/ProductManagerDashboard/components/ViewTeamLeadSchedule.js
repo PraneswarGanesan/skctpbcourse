@@ -1,10 +1,9 @@
-// src/components/ProductManagerDashboard/ViewTeamLeadSchedule.js
+
 import React, { useState } from 'react';
 import ProductManagerSidePanel from '../ProductManagerSidePanel';
 import { Box, Typography, Paper, List, ListItem, ListItemText, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
 
-// Sample data for team lead schedule and time-offs
 const initialTeamLeadSchedule = [
   { id: 1, name: 'John Doe', schedule: '9:00 AM - 5:00 PM', timeOff: [] },
   { id: 2, name: 'Jane Smith', schedule: '10:00 AM - 6:00 PM', timeOff: [] },

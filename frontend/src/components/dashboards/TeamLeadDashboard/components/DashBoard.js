@@ -1,4 +1,4 @@
-// src/components/dashboards/TeamLeadDashboard/components/Dashboard.js
+
 import React from 'react';
 import { Box, Typography, Card, CardContent, Grid, Divider } from '@mui/material';
 import { styled } from '@mui/system';
@@ -7,7 +7,7 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import TeamLeadSidePanel from '../TeamLeadSidePanel';
 
-// Sample data for tasks and pie chart
+
 const tasksRemaining = 5;
 const currentProject = "Project Alpha";
 const recentChanges = [
@@ -22,14 +22,14 @@ const kanbanStats = {
   done: 1,
 };
 
-// Sample data for pie chart
+
 const pieData = [
   { name: 'To Do', value: kanbanStats.toDo },
   { name: 'In Progress', value: kanbanStats.inProgress },
   { name: 'Completed', value: kanbanStats.done },
 ];
 
-// Colors for pie chart segments
+
 const COLORS = ['#FF9999', '#66B2FF', '#99FF99'];
 
 const StyledCard = styled(Card)({

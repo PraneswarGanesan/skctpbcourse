@@ -1,9 +1,9 @@
-// src/components/dashboards/EmployeeDashboard/components/Dashboard.js
+
 import React, { useState } from 'react';
 import { Box, Typography, Paper, Divider, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { MoreVert } from '@mui/icons-material';
 
-// Sample data
+
 const initialData = {
   tasks: {
     'task-1': { id: 'task-1', content: 'Task 1', description: 'Description for Task 1' },
@@ -83,8 +83,8 @@ const Dashboard = () => {
                     backgroundColor: '#f5f5f5',
                     boxShadow: 1,
                     borderRadius: 1,
-                    width: '100%', // Ensure tasks take full width of the column
-                    maxWidth: '300px', // Ensure tasks do not exceed column width
+                    width: '100%', 
+                    maxWidth: '300px', 
                   }}
                 >
                   {task.content}

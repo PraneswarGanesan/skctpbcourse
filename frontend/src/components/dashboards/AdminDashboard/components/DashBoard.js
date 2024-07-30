@@ -4,7 +4,7 @@ import { Box, Card, CardContent, Typography, Grid, Divider } from '@mui/material
 import { styled } from '@mui/system';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
-// Sample data for pie chart
+
 const pieData = [
   { name: 'HR Employees', value: 20 },
   { name: 'Product Managers', value: 10 },
@@ -12,7 +12,7 @@ const pieData = [
   { name: 'Team Leads', value: 30 },
 ];
 
-// Colors for pie chart segments
+
 const COLORS = ['#FF9999', '#66B2FF', '#99FF99', '#FFCC99'];
 
 const stats = {
@@ -21,7 +21,7 @@ const stats = {
   upcomingEvents: 10,
 };
 
-// Styled components for improved visuals
+
 const StyledCard = styled(Card)({
   borderRadius: '12px',
   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
@@ -58,7 +58,7 @@ const DashBoard = () => {
       <SidePanel />
       <Box sx={{ flexGrow: 1, p: 3 }}>
         <Typography variant="h4" component="h2" sx={{ mb: 4 }}>
-          Dashboard
+         Admin Dashboard
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12} md={4}>

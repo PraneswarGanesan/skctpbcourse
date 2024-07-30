@@ -1,17 +1,14 @@
-// src/components/ProductManagerDashboard/AssignEmployees.js
 import React, { useState } from 'react';
 import ProductManagerSidePanel from '../ProductManagerSidePanel';
 import { Box, Typography, Paper, Grid, TextField, Button, List, ListItem, ListItemText, MenuItem, IconButton } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
 
-// Sample data for assigned employees
 const assignedEmployees = [
   { id: 1, name: 'Alice Johnson', project: 'Project Alpha' },
   { id: 2, name: 'Bob Smith', project: 'Project Beta' },
   { id: 3, name: 'Carol White', project: 'Project Gamma' },
 ];
 
-// Sample data for teams
 const teams = [
   { id: 1, name: 'Team Alpha' },
   { id: 2, name: 'Team Beta' },
@@ -26,7 +23,6 @@ const AssignEmployees = () => {
   const [teamTasks, setTeamTasks] = useState([]);
 
   const handleAssignEmployee = () => {
-    // Handle employee assignment logic here
     console.log(`Assigned ${employeeName} to ${projectName}`);
     setEmployeeName('');
     setProjectName('');
