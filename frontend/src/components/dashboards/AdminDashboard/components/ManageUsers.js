@@ -1,38 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import SidePanel from '../AdminSidePanel'; 
+import SidePanel from '../AdminSidePanel';
 import { Box, Card, CardContent, Typography, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Paper } from '@mui/material';
-
-const sampleData = {
-  HR: 5,
-  ProductManagers: 3,
-  Employees: 80,
-  TeamLeads: 4,
-};
-
-const userList = [
-  { id: 1, name: 'John Doe', role: 'HR', email: 'john.doe@example.com' },
-  { id: 2, name: 'Jane Smith', role: 'Employee', email: 'jane.smith@example.com' },
-
-];
+import axios from 'axios';
 
 const ManageUsers = () => {
   const [userStats, setUserStats] = useState({});
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    
-    setUserStats(sampleData);
-    setUsers(userList);
+    // Fetch user statistics and list of users
+    const fetchData = async () => {
+      try {
+        // Update with actual API endpoints
+        const statsResponse = await axios.get('http://localhost:8080/api/admin/users/stats'); // Adjust the endpoint if necessary
+        setUserStats(statsResponse.data);
+
+        const usersResponse = await axios.get('http://localhost:8080/api/admin/users'); // Ensure this endpoint is correct
+        setUsers(usersResponse.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
   }, []);
 
   const handleEdit = (userId) => {
-
     console.log('Edit user with ID:', userId);
+    // Implement edit logic or navigation
   };
 
-  const handleDelete = (userId) => {
-   
-    console.log('Delete user with ID:', userId);
+  const handleDelete = async (userId) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/admin/users/${userId}`); // Correctly format the URL
+      setUsers(users.filter(user => user.id !== userId));
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
   };
 
   return (
@@ -78,7 +81,7 @@ const ManageUsers = () => {
                 {users.length > 0 ? (
                   users.map((user) => (
                     <TableRow key={user.id}>
-                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>{user.role}</TableCell>
                       <TableCell>

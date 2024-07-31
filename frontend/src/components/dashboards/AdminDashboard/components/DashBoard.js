@@ -72,7 +72,7 @@ const DashBoard = () => {
           <Grid item xs={12} md={4}>
             <StyledCard>
               <CardContent>
-                <CardHeader variant="h6">Active Shifts</CardHeader>
+                <CardHeader variant="h6">Total Companies</CardHeader>
                 <CardValue variant="h4">{stats.activeShifts}</CardValue>
               </CardContent>
             </StyledCard>
@@ -80,7 +80,7 @@ const DashBoard = () => {
           <Grid item xs={12} md={4}>
             <StyledCard>
               <CardContent>
-                <CardHeader variant="h6">Upcoming Events</CardHeader>
+                <CardHeader variant="h6">Total messages</CardHeader>
                 <CardValue variant="h4">{stats.upcomingEvents}</CardValue>
               </CardContent>
             </StyledCard>
@@ -113,12 +113,12 @@ const DashBoard = () => {
           <Grid item xs={12} md={6}>
             <StyledCard>
               <CardContent>
-                <Typography variant="h6" gutterBottom>Recent Activity</Typography>
+                <Typography variant="h6" gutterBottom>RecentMessage</Typography>
                 <RecentActivity>
-                  <ActivityItem>New user registered: John Doe</ActivityItem>
-                  <ActivityItem>Shift created: Morning shift for Aug 1</ActivityItem>
-                  <ActivityItem>Time-off request approved: Jane Smith</ActivityItem>
-                  <ActivityItem>Upcoming event: Company meeting on Aug 5</ActivityItem>
+                  <ActivityItem>messages from: John Doe</ActivityItem>
+                  <ActivityItem>messages from: markhery</ActivityItem>
+                  <ActivityItem>messages from: Jane Smith</ActivityItem>
+                  <ActivityItem>messages from: ghost rider</ActivityItem>
                 </RecentActivity>
               </CardContent>
             </StyledCard>

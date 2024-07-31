@@ -1,5 +1,4 @@
 package com.example.backendlol.backend.config;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,9 +20,12 @@ public class SecurityConfig {
         http.csrf().disable()
                 .authorizeRequests()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/admin/**").permitAll() // Adjust as needed
+                .requestMatchers("/api/contact/**").permitAll() // Adjust as needed
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().disable();
+                .formLogin().disable()
+                .cors(); // Ensure CORS is configured
         return http.build();
     }
 }
