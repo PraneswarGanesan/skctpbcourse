@@ -1,13 +1,12 @@
-
 import React, { useState } from 'react';
 import ProductManagerSidePanel from '../ProductManagerSidePanel';
 import { Box, Typography, Paper, List, ListItem, ListItemText, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton } from '@mui/material';
-import { Delete as DeleteIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon, Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 
 const initialTeamLeadSchedule = [
-  { id: 1, name: 'John Doe', schedule: '9:00 AM - 5:00 PM', timeOff: [] },
-  { id: 2, name: 'Jane Smith', schedule: '10:00 AM - 6:00 PM', timeOff: [] },
-  { id: 3, name: 'Emily Johnson', schedule: '8:00 AM - 4:00 PM', timeOff: [] },
+  { id: 1, name: 'John Doe', schedule: '9:00 AM - 5:00 PM', timeOff: [{ request: '2024-08-01', accepted: false }] },
+  { id: 2, name: 'Jane Smith', schedule: '10:00 AM - 6:00 PM', timeOff: [{ request: '2024-08-02', accepted: false }] },
+  { id: 3, name: 'Emily Johnson', schedule: '8:00 AM - 4:00 PM', timeOff: [{ request: '2024-08-03', accepted: false }] },
 ];
 
 const ViewTeamLeadSchedule = () => {
@@ -38,7 +37,7 @@ const ViewTeamLeadSchedule = () => {
 
   const handleAddTimeOff = (teamLeadId) => {
     setTeamLeadSchedule(prev => prev.map(tl => 
-      tl.id === teamLeadId ? { ...tl, timeOff: [...tl.timeOff, timeOff] } : tl
+      tl.id === teamLeadId ? { ...tl, timeOff: [...tl.timeOff, { request: timeOff, accepted: false }] } : tl
     ));
     setTimeOff('');
   };
@@ -47,6 +46,16 @@ const ViewTeamLeadSchedule = () => {
     setTeamLeadSchedule(prev => prev.map(tl => 
       tl.id === teamLeadId ? { ...tl, timeOff: tl.timeOff.filter((_, i) => i !== index) } : tl
     ));
+  };
+
+  const handleAcceptTimeOff = (teamLeadId, index) => {
+    setTeamLeadSchedule(prev => prev.map(tl => 
+      tl.id === teamLeadId ? { ...tl, timeOff: tl.timeOff.map((off, i) => i === index ? { ...off, accepted: true } : off) } : tl
+    ));
+  };
+
+  const handleDeclineTimeOff = (teamLeadId, index) => {
+    handleRemoveTimeOff(teamLeadId, index);
   };
 
   return (
@@ -60,7 +69,7 @@ const ViewTeamLeadSchedule = () => {
           <Typography variant="h6">Team Lead Schedules</Typography>
           <List>
             {teamLeadSchedule.map((schedule) => (
-              <ListItem key={schedule.id}>
+              <ListItem key={schedule.id} sx={{ display: 'block' }}>
                 <ListItemText
                   primary={`${schedule.name}`}
                   secondary={`Schedule: ${schedule.schedule}`}
@@ -73,11 +82,16 @@ const ViewTeamLeadSchedule = () => {
                   <List>
                     {schedule.timeOff.map((off, index) => (
                       <ListItem key={index} secondaryAction={
-                        <IconButton edge="end" onClick={() => handleRemoveTimeOff(schedule.id, index)}>
-                          <DeleteIcon />
-                        </IconButton>
+                        <>
+                          <IconButton edge="end" onClick={() => handleAcceptTimeOff(schedule.id, index)}>
+                            <CheckIcon />
+                          </IconButton>
+                          <IconButton edge="end" onClick={() => handleDeclineTimeOff(schedule.id, index)}>
+                            <CloseIcon />
+                          </IconButton>
+                        </>
                       }>
-                        <ListItemText primary={off} />
+                        <ListItemText primary={`${off.request} - ${off.accepted ? 'Accepted' : 'Pending'}`} />
                       </ListItem>
                     ))}
                   </List>
