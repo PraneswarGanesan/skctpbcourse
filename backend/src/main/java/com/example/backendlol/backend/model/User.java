@@ -17,9 +17,7 @@ public class User {
     private String password;
     private String company;
 
-    private String role; // Changed from Collection<String> to String
-
-    // Getters and setters
+    private String role; 
 
     public Long getId() {
         return id;
