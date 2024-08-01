@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().disable()
-                .cors(); // Ensure CORS is configured
+                .cors();
         return http.build();
     }
 }

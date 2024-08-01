@@ -1,5 +1,7 @@
 package com.example.backendlol.backend.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -18,6 +20,16 @@ public class User {
     private String company;
 
     private String role; 
+       @Column(name = "created_date")
+    private LocalDateTime createdDate;
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
 
     public Long getId() {
         return id;
