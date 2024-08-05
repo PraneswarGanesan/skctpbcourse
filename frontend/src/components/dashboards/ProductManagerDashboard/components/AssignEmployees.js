@@ -1,145 +1,181 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, Container, Typography, Paper, Checkbox, FormControlLabel, MenuItem } from '@mui/material';
+import axios from 'axios';
 import ProductManagerSidePanel from '../ProductManagerSidePanel';
-import { Box, Typography, Paper, Grid, TextField, Button, List, ListItem, ListItemText, MenuItem, IconButton } from '@mui/material';
-import { Delete as DeleteIcon } from '@mui/icons-material';
-
-const assignedEmployees = [
-  { id: 1, name: 'Alice Johnson', project: 'Project Alpha' },
-  { id: 2, name: 'Bob Smith', project: 'Project Beta' },
-  { id: 3, name: 'Carol White', project: 'Project Gamma' },
-];
-
-const teams = [
-  { id: 1, name: 'Team Alpha' },
-  { id: 2, name: 'Team Beta' },
-  { id: 3, name: 'Team Gamma' },
-];
 
 const AssignEmployees = () => {
-  const [employeeName, setEmployeeName] = useState('');
-  const [projectName, setProjectName] = useState('');
-  const [taskName, setTaskName] = useState('');
-  const [selectedTeam, setSelectedTeam] = useState('');
-  const [teamTasks, setTeamTasks] = useState([]);
+  const [teamName, setTeamName] = useState('');
+  const [employees, setEmployees] = useState([]);
+  const [teamLeads, setTeamLeads] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState('');
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [selectedTeamLead, setSelectedTeamLead] = useState(null);
+  const [teams, setTeams] = useState([]);
 
-  const handleAssignEmployee = () => {
-    console.log(`Assigned ${employeeName} to ${projectName}`);
-    setEmployeeName('');
-    setProjectName('');
+  useEffect(() => {
+    // Fetch team leads
+    axios.get('http://localhost:8080/api/teams/users/team_lead')
+      .then(response => {
+        console.log('Fetched team leads:', response.data);
+        setTeamLeads(response.data);
+      })
+      .catch(error => console.error('Error fetching team leads', error));
+
+    // Fetch employees
+    axios.get('http://localhost:8080/api/teams/users/employee')
+      .then(response => {
+        console.log('Fetched employees:', response.data);
+        setEmployees(response.data);
+      })
+      .catch(error => console.error('Error fetching employees', error));
+
+    // Fetch projects
+    axios.get('http://localhost:8080/api/projects/allprojects')
+      .then(response => {
+        console.log('Fetched projects:', response.data);
+        setProjects(response.data);
+      })
+      .catch(error => console.error('Error fetching projects', error));
+
+    // Fetch teams
+    axios.get('http://localhost:8080/api/teams')
+      .then(response => {
+        console.log('Fetched teams:', response.data);
+        setTeams(response.data);
+      })
+      .catch(error => console.error('Error fetching teams', error));
+  }, []);
+
+  const handleCreateTeam = () => {
+    axios.post('http://localhost:8080/api/teams', {
+      name: teamName,
+      leadId: selectedTeamLead ? selectedTeamLead.id : null,
+      memberIds: selectedEmployees.map(emp => emp.id),
+      project: { id: selectedProject }
+    })
+    .then(response => {
+      alert('Team created successfully');
+      setTeamName('');
+      setSelectedProject('');
+      setSelectedEmployees([]);
+      setSelectedTeamLead(null);
+      setTeams([...teams, response.data]);
+    })
+    .catch(error => {
+      console.error('There was an error creating the team!', error);
+    });
   };
 
-  const handleAssignTask = () => {
-    if (selectedTeam && taskName) {
-      setTeamTasks([...teamTasks, { team: selectedTeam, task: taskName }]);
-      setTaskName('');
-      setSelectedTeam('');
-    }
-  };
-
-  const handleRemoveTask = (index) => {
-    setTeamTasks(teamTasks.filter((_, i) => i !== index));
+  const handleDeleteTeam = (teamId) => {
+    axios.delete(`http://localhost:8080/api/teams/${teamId}`)
+      .then(() => {
+        alert('Team deleted successfully');
+        setTeams(teams.filter(team => team.id !== teamId));
+      })
+      .catch(error => {
+        console.error('There was an error deleting the team!', error);
+      });
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <div>
       <ProductManagerSidePanel />
-      <Box sx={{ p: 3, flexGrow: 1 }}>
-        <Typography variant="h4" gutterBottom>
-          Assign Employees and Tasks
-        </Typography>
-        <Paper sx={{ p: 2, mb: 3 }}>
-          <Typography variant="h6">Assign Employees to Projects</Typography>
-          <Grid container spacing={3} sx={{ mt: 2 }}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Employee Name"
-                fullWidth
-                margin="normal"
-                value={employeeName}
-                onChange={(e) => setEmployeeName(e.target.value)}
-              />
-              <TextField
-                label="Project Name"
-                fullWidth
-                margin="normal"
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ mt: 2 }}
-                onClick={handleAssignEmployee}
-              >
-                Assign
-              </Button>
-            </Grid>
-          </Grid>
-        </Paper>
-        <Paper sx={{ p: 2, mb: 3 }}>
-          <Typography variant="h6">Assign Tasks to Teams</Typography>
-          <Grid container spacing={3} sx={{ mt: 2 }}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                select
-                label="Select Team"
-                fullWidth
-                margin="normal"
-                value={selectedTeam}
-                onChange={(e) => setSelectedTeam(e.target.value)}
-              >
-                {teams.map((team) => (
-                  <MenuItem key={team.id} value={team.name}>
-                    {team.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-              <TextField
-                label="Task Name"
-                fullWidth
-                margin="normal"
-                value={taskName}
-                onChange={(e) => setTaskName(e.target.value)}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ mt: 2 }}
-                onClick={handleAssignTask}
-                disabled={!selectedTeam || !taskName}
-              >
-                Assign Task
-              </Button>
-              <List>
-                {teamTasks.map((task, index) => (
-                  <ListItem key={index} secondaryAction={
-                    <IconButton edge="end" onClick={() => handleRemoveTask(index)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  }>
-                    <ListItemText
-                      primary={`${task.team} - ${task.task}`}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </Grid>
-          </Grid>
-        </Paper>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6" gutterBottom>Assigned Employees</Typography>
-          <List>
-            {assignedEmployees.map(employee => (
-              <ListItem key={employee.id}>
-                <ListItemText
-                  primary={`${employee.name} - ${employee.project}`}
-                />
-              </ListItem>
+      <Container>
+        <Paper style={{ padding: '20px', marginTop: '20px' }}>
+          <Typography variant="h4" gutterBottom>
+            Assign Employees
+          </Typography>
+          <TextField
+            label="Team Name"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={teamName}
+            onChange={(e) => setTeamName(e.target.value)}
+          />
+          <TextField
+            select
+            label="Project"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={selectedProject}
+            onChange={(e) => setSelectedProject(e.target.value)}
+          >
+            {projects.map(project => (
+              <MenuItem key={project.id} value={project.id}>
+                {project.name}
+              </MenuItem>
             ))}
-          </List>
+          </TextField>
+          <Typography variant="h6" gutterBottom style={{ marginTop: '20px' }}>
+            Select Team Lead
+          </Typography>
+          {teamLeads.map(teamLead => (
+            <FormControlLabel
+              key={teamLead.id}
+              control={
+                <Checkbox
+                  checked={selectedTeamLead?.id === teamLead.id}
+                  onChange={() => setSelectedTeamLead(selectedTeamLead?.id === teamLead.id ? null : teamLead)}
+                />
+              }
+              label={teamLead.username}
+            />
+          ))}
+          <Typography variant="h6" gutterBottom style={{ marginTop: '20px' }}>
+            Select Employees
+          </Typography>
+          {employees.map(employee => (
+            <FormControlLabel
+              key={employee.id}
+              control={
+                <Checkbox
+                  checked={selectedEmployees.some(emp => emp.id === employee.id)}
+                  onChange={() => {
+                    setSelectedEmployees(prevSelected =>
+                      prevSelected.some(emp => emp.id === employee.id)
+                        ? prevSelected.filter(emp => emp.id !== employee.id)
+                        : [...prevSelected, employee]
+                    );
+                  }}
+                />
+              }
+              label={employee.username}
+            />
+          ))}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleCreateTeam}
+            style={{ marginTop: '20px' }}
+          >
+            Assign Team
+          </Button>
+          <Typography variant="h5" gutterBottom style={{ marginTop: '20px' }}>
+            Created Teams
+          </Typography>
+          {teams.map(team => (
+            <Paper key={team.id} style={{ padding: '10px', margin: '10px 0' }}>
+              <Typography variant="h6">{team.name}</Typography>
+              <Typography>Team Lead: {team.leadUsername}</Typography>
+              <Typography>
+                Members: {team.memberUsernames.length > 0 ? team.memberUsernames.join(', ') : 'No members assigned'}
+              </Typography>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => handleDeleteTeam(team.id)}
+                style={{ marginTop: '10px' }}
+              >
+                Delete
+              </Button>
+            </Paper>
+          ))}
         </Paper>
-      </Box>
-    </Box>
+      </Container>
+    </div>
   );
 };
 

@@ -1,4 +1,5 @@
 package com.example.backendlol.backend.config;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,10 +20,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/admin/**").permitAll() // Adjust as needed
-                .requestMatchers("/api/contact/**").permitAll() // Adjust as needed
-                .anyRequest().authenticated()
+                .anyRequest().permitAll() // Allow all requests without authentication
                 .and()
                 .formLogin().disable()
                 .cors();

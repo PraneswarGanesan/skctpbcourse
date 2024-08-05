@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Signup from './components/Signup';
@@ -20,7 +19,20 @@ const App = () => {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('username');
+    localStorage.removeItem('expiration');
     setUser(null);
+  };
+
+  const isSessionValid = () => {
+    const expirationTime = localStorage.getItem('expiration');
+    if (!expirationTime) return false;
+    return new Date().getTime() < parseInt(expirationTime, 10);
+  };
+  
+
+  const ProtectedRoute = ({ element }) => {
+    return isSessionValid() ? element : <Navigate to="/login" />;
   };
 
   return (
@@ -28,11 +40,11 @@ const App = () => {
       <Routes>
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
-        <Route path="/admin-dashboard/*" element={user?.role === 'admin' ? <AdminDashboard user={user} /> : <Navigate to="/login" />} />
-        <Route path="/employee-dashboard/*" element={user?.role === 'employee' ? <EmployeeDashboard user={user} /> : <Navigate to="/login" />} />
-        {/* <Route path="/hr-dashboard/*" element={user?.role === 'hr' ? <HRDashboard user={user} /> : <Navigate to="/login" />} /> */}
-        <Route path="/team-lead-dashboard/*" element={user?.role === 'team_lead' ? <TeamLeadDashboard user={user} /> : <Navigate to="/login" />} />
-        <Route path="/product-manager-dashboard/*" element={user?.role === 'product_manager' ? <ProductManagerDashboard user={user} /> : <Navigate to="/login" />} />
+        <Route path="/admin-dashboard/*" element={<ProtectedRoute element={<AdminDashboard user={user} />} />} />
+        <Route path="/employee-dashboard/*" element={<ProtectedRoute element={<EmployeeDashboard user={user} />} />} />
+        {/* <Route path="/hr-dashboard/*" element={<ProtectedRoute element={<HRDashboard user={user} />} />} /> */}
+        <Route path="/team-lead-dashboard/*" element={<ProtectedRoute element={<TeamLeadDashboard user={user} />} />} />
+        <Route path="/product-manager-dashboard/*" element={<ProtectedRoute element={<ProductManagerDashboard user={user} />} />} />
         <Route path="/" element={<Home user={user} onLogout={handleLogout} />} />
         <Route path="/home" element={<Home user={user} onLogout={handleLogout} />} />
         <Route path="/about" element={<About />} />

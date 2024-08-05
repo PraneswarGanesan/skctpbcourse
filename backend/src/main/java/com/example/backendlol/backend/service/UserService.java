@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -26,9 +26,13 @@ public class UserService {
         }
         return userRepository.save(user);
     }
+    
 
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+      public List<User> getUsersByRole(String role) {
+        return userRepository.findByRole(role);
     }
 
     public Optional<User> findByUsername(String username) {

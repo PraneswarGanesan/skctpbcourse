@@ -33,5 +33,20 @@ import org.springframework.security.core.Authentication;
             }
             return ResponseEntity.badRequest().body("Invalid username or password");
         }
+        @GetMapping("/profile/{username}")
+        public ResponseEntity<?> getProfile(@PathVariable String username) {
+            Optional<User> userOptional = userService.findByUsername(username);
+            return userOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        }
+    
+        @PutMapping("/update")
+        public ResponseEntity<?> updateUser(@RequestBody User user) {
+            try {
+                User updatedUser = userService.updateUser(user);
+                return ResponseEntity.ok(updatedUser);
+            } catch (RuntimeException e) {
+                return ResponseEntity.badRequest().body(e.getMessage());
+            }
+        }
 
     }

@@ -7,7 +7,7 @@
 
   const Login = ({ onLogin }) => {
     const [form, setForm] = useState({
-      email: '',
+      username: '',
       password: '',
     });
     const [error, setError] = useState('');
@@ -21,12 +21,21 @@
       e.preventDefault();
       try {
         const response = await axios.post('http://localhost:8080/api/auth/login', {
-          email: form.email,
+          username: form.username,
           password: form.password,
         });
     
         const userInfo = response.data;
         console.log("User Info:", userInfo); // Log user info for debugging
+        
+        // Set the expiration time to 5 seconds from now
+        const expirationTime = new Date().getTime() + 5000; // 5 seconds in milliseconds
+    
+        // Save the username and expiration time to local storage
+        localStorage.setItem('username', form.username);
+        localStorage.setItem('expiration', expirationTime);
+        console.log("Expiration Time:", expirationTime);
+        console.log("Expiration Time:", localStorage.getItem('expiration'));
     
         onLogin(userInfo);
     
@@ -52,6 +61,8 @@
         setError('Login failed. Please check your credentials and try again.');
       }
     };
+    
+    
     return (
       <div className='Login'>
         <div className='login-bg'></div> 
@@ -67,8 +78,8 @@
                 </div>
                 {error && <Typography color="error">{error}</Typography>}
                 <form className="form" onSubmit={handleSubmit}>
-                  <label>Email</label>
-                  <TextField name='email' type='email' variant='outlined' value={form.email} onChange={handleChange} required />
+                  <label>Username</label>
+                  <TextField name='username' type='text' variant='outlined' value={form.username} onChange={handleChange} required />
                   <label>Password</label>
                   <TextField name='password' type='password' variant='outlined' value={form.password} onChange={handleChange} required />
                   <Button type="submit" variant="contained" color="primary" fullWidth id="button">Login</Button>

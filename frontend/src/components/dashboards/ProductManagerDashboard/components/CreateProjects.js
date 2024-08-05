@@ -1,138 +1,179 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, Container, Typography, Paper, Card, CardContent, Grid, IconButton } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import axios from 'axios';
 import ProductManagerSidePanel from '../ProductManagerSidePanel';
-import { Box, Typography, Paper, TextField, Button, List, ListItem, ListItemText, MenuItem, IconButton } from '@mui/material';
-import { Delete as DeleteIcon } from '@mui/icons-material';
-
-const employees = [
-  { id: 1, name: 'John Doe' },
-  { id: 2, name: 'Jane Smith' },
-  { id: 3, name: 'Alice Johnson' },
-];
-
-const roles = ['Team Leader', 'Senior Developer', 'Junior Developer', 'Tester'];
 
 const CreateProjects = () => {
   const [projectName, setProjectName] = useState('');
-  const [description, setDescription] = useState('');
-  const [teamMembers, setTeamMembers] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState('');
-  const [selectedRole, setSelectedRole] = useState('');
+  const [projectDescription, setProjectDescription] = useState('');
+  const [projects, setProjects] = useState([]);
+  const [editProject, setEditProject] = useState(null); // To track the project being edited
+  const [editName, setEditName] = useState('');
+  const [editDescription, setEditDescription] = useState('');
 
-  const handleAddTeamMember = () => {
-    if (selectedEmployee && selectedRole) {
-      setTeamMembers([...teamMembers, { employee: selectedEmployee, role: selectedRole }]);
-      setSelectedEmployee('');
-      setSelectedRole('');
-    }
-  };
-
-  const handleRemoveTeamMember = (index) => {
-    setTeamMembers(teamMembers.filter((_, i) => i !== index));
-  };
+  useEffect(() => {
+    // Fetch all projects on component mount
+    axios.get('http://localhost:8080/api/projects/allprojects')
+      .then(response => {
+        console.log('Fetched projects:', response.data); // Log the fetched projects
+        setProjects(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching projects', error);
+      });
+  }, []);
 
   const handleCreateProject = () => {
-    const projectDetails = {
-      projectName,
-      description,
-      teamMembers,
-    };
-    console.log('Project Created:', projectDetails);
-    // Reset fields
-    setProjectName('');
-    setDescription('');
-    setTeamMembers([]);
+    axios.post('http://localhost:8080/api/projects', {
+      name: projectName,
+      description: projectDescription
+    })
+    .then(response => {
+      console.log('Project created:', response.data); // Log the newly created project
+      alert('Project created successfully');
+      setProjectName('');
+      setProjectDescription('');
+      // Optionally refresh the list of projects
+      setProjects([...projects, response.data]);
+    })
+    .catch(error => {
+      console.error('There was an error creating the project!', error);
+    });
   };
 
+  const handleEditClick = (project) => {
+    setEditProject(project);
+    setEditName(project.name);
+    setEditDescription(project.description);
+  };
+
+  const handleEditSave = () => {
+    axios.put(`http://localhost:8080/api/projects/${editProject.id}`, {
+      name: editName,
+      description: editDescription
+    })
+    .then(response => {
+      console.log('Project updated:', response.data);
+      alert('Project updated successfully');
+      setProjects(projects.map(project =>
+        project.id === editProject.id ? response.data : project
+      ));
+      setEditProject(null);
+    })
+    .catch(error => {
+      console.error('There was an error updating the project!', error);
+    });
+  };
+
+  const handleDeleteClick = (projectId) => {
+    axios.delete(`http://localhost:8080/api/projects/${projectId}`)
+    .then(() => {
+      console.log('Project deleted');
+      alert('Project deleted successfully');
+      setProjects(projects.filter(project => project.id !== projectId));
+    })
+    .catch(error => {
+      console.error('There was an error deleting the project!', error);
+    });
+  };
+
+  console.log('Projects state:', projects); // Log the projects state
+
   return (
-    <Box sx={{ display: 'flex' }}>
+    <div>
       <ProductManagerSidePanel />
-      <Box sx={{ p: 3, flexGrow: 1 }}>
-        <Typography variant="h4" gutterBottom>
-          Create New Project
-        </Typography>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6">Project Details</Typography>
+      <Container>
+        <Paper style={{ padding: '20px', marginTop: '20px' }}>
+          <Typography variant="h4" gutterBottom>
+            Create New Project
+          </Typography>
           <TextField
             label="Project Name"
+            variant="outlined"
             fullWidth
             margin="normal"
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
           />
           <TextField
-            label="Description"
+            label="Project Description"
+            variant="outlined"
             fullWidth
-            multiline
-            rows={4}
             margin="normal"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={projectDescription}
+            onChange={(e) => setProjectDescription(e.target.value)}
           />
-        </Paper>
-        <Paper sx={{ p: 2, mt: 2 }}>
-          <Typography variant="h6">Team Members</Typography>
-          <TextField
-            select
-            label="Employee"
-            fullWidth
-            margin="normal"
-            value={selectedEmployee}
-            onChange={(e) => setSelectedEmployee(e.target.value)}
-          >
-            {employees.map((employee) => (
-              <MenuItem key={employee.id} value={employee.name}>
-                {employee.name}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            select
-            label="Role"
-            fullWidth
-            margin="normal"
-            value={selectedRole}
-            onChange={(e) => setSelectedRole(e.target.value)}
-          >
-            {roles.map((role, index) => (
-              <MenuItem key={index} value={role}>
-                {role}
-              </MenuItem>
-            ))}
-          </TextField>
           <Button
             variant="contained"
             color="primary"
-            sx={{ mt: 2 }}
-            onClick={handleAddTeamMember}
-            disabled={!selectedEmployee || !selectedRole}
+            onClick={handleCreateProject}
+            style={{ marginTop: '20px' }}
           >
-            Add Team Member
+            Create Project
           </Button>
-          <List>
-            {teamMembers.map((member, index) => (
-              <ListItem key={index} secondaryAction={
-                <IconButton edge="end" onClick={() => handleRemoveTeamMember(index)}>
-                  <DeleteIcon />
-                </IconButton>
-              }>
-                <ListItemText
-                  primary={`${member.employee} - ${member.role}`}
-                />
-              </ListItem>
-            ))}
-          </List>
+          <Typography variant="h5" gutterBottom style={{ marginTop: '20px' }}>
+            Existing Projects
+          </Typography>
+          <Grid container spacing={3}>
+            {Array.isArray(projects) ? (
+              projects.map(project => (
+                <Grid item xs={12} sm={6} md={4} key={project.id}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6">{project.name}</Typography>
+                      <Typography variant="body2">{project.description}</Typography>
+                      <div style={{ marginTop: '10px' }}>
+                        <IconButton onClick={() => handleEditClick(project)} color="primary">
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton onClick={() => handleDeleteClick(project.id)} color="secondary">
+                          <DeleteIcon />
+                        </IconButton>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))
+            ) : (
+              <Typography variant="body2">No projects available</Typography>
+            )}
+          </Grid>
         </Paper>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2 }}
-          onClick={handleCreateProject}
-          disabled={!projectName || !description || teamMembers.length === 0}
-        >
-          Create Project
-        </Button>
-      </Box>
-    </Box>
+        {editProject && (
+          <Paper style={{ padding: '20px', marginTop: '20px' }}>
+            <Typography variant="h5" gutterBottom>
+              Edit Project
+            </Typography>
+            <TextField
+              label="Project Name"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+            />
+            <TextField
+              label="Project Description"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={editDescription}
+              onChange={(e) => setEditDescription(e.target.value)}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleEditSave}
+              style={{ marginTop: '20px' }}
+            >
+              Save Changes
+            </Button>
+          </Paper>
+        )}
+      </Container>
+    </div>
   );
 };
 
