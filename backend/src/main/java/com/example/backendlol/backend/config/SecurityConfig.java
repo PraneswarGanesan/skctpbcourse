@@ -18,12 +18,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .authorizeRequests()
-                .anyRequest().permitAll() // Allow all requests without authentication
-                .and()
-                .formLogin().disable()
-                .cors();
+        http
+   .csrf(csrf -> csrf.disable())
+   .authorizeHttpRequests(authz -> authz
+       .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/verify").permitAll()
+       .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() 
+       .anyRequest().authenticated()
+   )
+   .formLogin(form -> form.disable())
+   .cors(cors -> cors.disable());
+    
         return http.build();
     }
+    
 }
