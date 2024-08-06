@@ -1,0 +1,87 @@
+.login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 89vh;
+    background-size: cover;
+    background-color: rgb(254, 243, 226);
+  }
+  .im{
+    padding-right: 50px;
+  }
+  
+  .form {
+    background-color: #ffffff9a;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    box-sizing: border-box;
+  }
+  
+  .sig {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+  }
+  
+  .form label {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .form input[type="email"],
+  .form input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+  
+  .form input[type="email"]:focus,
+  .form input[type="password"]:focus {
+    border-color: #0056b3;
+    outline: none;
+  }
+  
+  .bt {
+    color: white;
+    width: 100%;
+    padding: 10px;
+    background-color: #3b3b3b;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .bt:hover {
+    background-color: #4e4e4e;
+    color: rgb(0, 0, 0);
+  }
+  
+  p {
+    text-align: center;
+  }
+  
+  .l {
+    color: #3b3b3b;
+    text-decoration: none;
+  }
+  
+  .l:hover {
+    color: black;
+    text-decoration: none;
+  }
+  
+  .l:last-child {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+  }
+ 
