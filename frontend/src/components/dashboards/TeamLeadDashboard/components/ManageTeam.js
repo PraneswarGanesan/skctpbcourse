@@ -1,122 +1,179 @@
-
-import React, { useState } from 'react';
-import { Box, Typography, Paper, Grid, TextField, Button, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton } from '@mui/material';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
-import TeamLeadSidePanel from '../TeamLeadSidePanel';
-import DeleteIcon from '@mui/icons-material/Delete';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import {
+  Box,
+  Typography,
+  Paper,
+  Button,
+  TextField,
+  List,
+  ListItem,
+  ListItemText,
+  Autocomplete
+} from '@mui/material';
 
 const ManageTeam = () => {
-  const [tasks, setTasks] = useState([
-    { id: 1, name: 'Task 1', assignedTo: 'Team Member 1', date: '2024-07-30', time: '10:00' },
-    { id: 2, name: 'Task 2', assignedTo: 'Team Member 2', date: '2024-07-31', time: '14:00' },
-  ]);
-  const [newTask, setNewTask] = useState('');
-  const [assignedTo, setAssignedTo] = useState('');
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
+  const [teams, setTeams] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [newTaskName, setNewTaskName] = useState('');
+  const [newTaskDate, setNewTaskDate] = useState(new Date().toISOString().split('T')[0]);
+  const [newTaskTime, setNewTaskTime] = useState('08:00');
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [employeeOptions, setEmployeeOptions] = useState([]);
 
-  const handleAddTask = () => {
-    if (newTask && assignedTo && date && time) {
-      setTasks([...tasks, { id: tasks.length + 1, name: newTask, assignedTo, date, time }]);
-      setNewTask('');
-      setAssignedTo('');
-      setDate('');
-      setTime('');
+  useEffect(() => {
+    // Fetch teams and tasks
+    const fetchTeams = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/teams');
+        setTeams(response.data);
+      } catch (error) {
+        console.error('Error fetching teams:', error);
+      }
+    };
+
+    const fetchTasks = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/employeetasks/all');
+        setTasks(response.data);
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+      }
+    };
+
+    fetchTeams();
+    fetchTasks();
+  }, []);
+
+  useEffect(() => {
+    if (selectedTeam) {
+      // Prepare employee options for autocomplete
+      const employees = selectedTeam.memberUsernames.map(username => ({ username }));
+      setEmployeeOptions(employees);
+    }
+  }, [selectedTeam]);
+
+  const handleAssignTask = async () => {
+    if (selectedTeam && selectedEmployee) {
+      try {
+        const payload = {
+          taskName: newTaskName,
+          teamLeadId: selectedTeam.leadId,
+          employeeId: selectedEmployee.id,
+          date: newTaskDate,
+          time: newTaskTime
+        };
+
+        const response = await axios.post('http://localhost:8080/api/employeetasks/post', payload);
+        setTasks((prev) => [...prev, response.data]);
+        setNewTaskName('');
+        setNewTaskDate(new Date().toISOString().split('T')[0]);
+        setNewTaskTime('08:00');
+        setSelectedEmployee(null);
+      } catch (error) {
+        console.error('Error assigning task:', error);
+      }
+    } else {
+      alert('Please select an employee to assign the task to.');
     }
   };
 
-  const handleRemoveTask = (id) => {
-    setTasks(tasks.filter(task => task.id !== id));
-  };
-
   return (
-    <Box sx={{ display: 'flex' }}>
-      <TeamLeadSidePanel />
-      <Box sx={{ p: 3, flexGrow: 1 }}>
-        <Typography variant="h4" gutterBottom>
-          Manage Team
-        </Typography>
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Paper sx={{ p: 2, width: '48%' }}>
-            <Typography variant="h6" gutterBottom>
-              Assign Task
-            </Typography>
-            <Grid container spacing={3} sx={{ mt: 2 }}>
-              <Grid item xs={12}>
-                <TextField
-                  label="Task Name"
-                  fullWidth
-                  value={newTask}
-                  onChange={(e) => setNewTask(e.target.value)}
-                  margin="normal"
-                />
-                <TextField
-                  label="Assign To"
-                  fullWidth
-                  value={assignedTo}
-                  onChange={(e) => setAssignedTo(e.target.value)}
-                  margin="normal"
-                />
-                <TextField
-                  label="Date"
-                  type="date"
-                  fullWidth
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  margin="normal"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-                <TextField
-                  label="Time"
-                  type="time"
-                  fullWidth
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  margin="normal"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-                <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleAddTask}>
-                  Assign
-                </Button>
-              </Grid>
-            </Grid>
-          </Paper>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        Manage Team
+      </Typography>
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <Typography variant="h6">Teams</Typography>
+        <List>
+          {teams.map((team) => (
+            <ListItem
+              key={team.id}
+              button
+              onClick={() => setSelectedTeam(team)}
+            >
+              <ListItemText
+                primary={`Team: ${team.name}`}
+                secondary={`Project: ${team.project.name} - Lead: ${team.leadUsername}`}
+              />
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
 
-          <Paper sx={{ p: 2, width: '48%' }}>
-            <Typography variant="h6" gutterBottom>
-              Team Tasks
-            </Typography>
-            <List>
-              {tasks.map((task) => (
-                <ListItem key={task.id}>
-                  <ListItemText
-                    primary={`${task.name} (Due: ${task.date} at ${task.time})`}
-                    secondary={`Assigned to: ${task.assignedTo}`}
-                  />
-                  <ListItemSecondaryAction>
-                    <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveTask(task.id)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              ))}
-            </List>
-          </Paper>
-        </Box>
-        
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h6" gutterBottom>
-            Calendar
-          </Typography>
-          <Calendar />
-        </Box>
-      </Box>
+      {selectedTeam && (
+        <Paper sx={{ p: 2, mb: 2 }}>
+          <Typography variant="h6">Assign Task to Team</Typography>
+          <TextField
+            label="Task Name"
+            value={newTaskName}
+            onChange={(e) => setNewTaskName(e.target.value)}
+            fullWidth
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Date"
+            type="date"
+            value={newTaskDate}
+            onChange={(e) => setNewTaskDate(e.target.value)}
+            fullWidth
+            sx={{ mb: 2 }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <TextField
+            label="Time"
+            type="time"
+            value={newTaskTime}
+            onChange={(e) => setNewTaskTime(e.target.value)}
+            fullWidth
+            sx={{ mb: 2 }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <Autocomplete
+            options={employeeOptions}
+            getOptionLabel={(option) => option.username}
+            onChange={(event, value) => {
+              const employeeId = selectedTeam.memberIds[employeeOptions.indexOf(value)];
+              setSelectedEmployee({ id: employeeId });
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Select Employee"
+                variant="outlined"
+                fullWidth
+              />
+            )}
+            sx={{ mb: 2 }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAssignTask}
+          >
+            Assign Task
+          </Button>
+        </Paper>
+      )}
+
+      <Paper sx={{ p: 2 }}>
+        <Typography variant="h6">Tasks</Typography>
+        <List>
+          {tasks.map((task) => (
+            <ListItem key={task.id}>
+              <ListItemText
+                primary={`Task: ${task.taskName}`}
+                secondary={`Assigned to: Employee ${task.employeeId} - Due Date: ${task.date} ${task.time}`}
+              />
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
     </Box>
   );
 };

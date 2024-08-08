@@ -1,43 +1,65 @@
-
-import React, { useState } from 'react';
-import { Box, Typography, Paper, Divider, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import {
+  Box,
+  Typography,
+  Paper,
+  Grid,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel
+} from '@mui/material';
 import { MoreVert } from '@mui/icons-material';
 
-
-const initialData = {
-  tasks: {
-    'task-1': { id: 'task-1', content: 'Task 1', description: 'Description for Task 1' },
-    'task-2': { id: 'task-2', content: 'Task 2', description: 'Description for Task 2' },
-    'task-3': { id: 'task-3', content: 'Task 3', description: 'Description for Task 3' },
-  },
-  columns: {
-    'column-1': {
-      id: 'column-1',
-      title: 'Backlog',
-      taskIds: ['task-1', 'task-2'],
-    },
-    'column-2': {
-      id: 'column-2',
-      title: 'In Progress',
-      taskIds: ['task-3'],
-    },
-    'column-3': {
-      id: 'column-3',
-      title: 'Done',
-      taskIds: [],
-    },
-  },
-  columnOrder: ['column-1', 'column-2', 'column-3'],
-};
-
 const Dashboard = () => {
-  const [data] = useState(initialData);
+  const [tasks, setTasks] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [status, setStatus] = useState('');
+  const [userId, setUserId] = useState(null); // Store user ID here
+
+  // Replace with your method to fetch the current logged-in user ID
+  useEffect(() => {
+    // Example to fetch user ID, you may need to replace this with actual implementation
+    const fetchUserId = async () => {
+      try {
+        const response = await axios.get('/api/current-user');
+        setUserId(response.data.id); // Assuming response contains user ID
+      } catch (error) {
+        console.error('Error fetching user ID:', error);
+      }
+    };
+
+    fetchUserId();
+  }, []);
+
+  useEffect(() => {
+    if (userId) {
+      const fetchTasks = async () => {
+        console.log(userId);
+        try {
+          const response = await axios.get(`http://localhost:8080/api/employeetasks/employee/${userId}`);
+          setTasks(response.data);
+        } catch (error) {
+          console.error('Error fetching tasks:', error);
+        }
+      };
+
+      fetchTasks();
+    }
+  }, [userId]);
 
   const handleClickOpen = (task) => {
     setSelectedTask(task);
     setOpen(true);
+    setStatus(task.status); // Set the current status when opening the dialog
   };
 
   const handleClose = () => {
@@ -45,76 +67,82 @@ const Dashboard = () => {
     setSelectedTask(null);
   };
 
+  const handleStatusChange = async () => {
+    if (selectedTask) {
+      try {
+        const payload = { status };
+        await axios.patch(`http://localhost:8080/api/employeetasks/${selectedTask.id}/status`, payload);
+        setTasks((prevTasks) => 
+          prevTasks.map(task => 
+            task.id === selectedTask.id ? { ...task, status } : task
+          )
+        );
+        handleClose();
+      } catch (error) {
+        console.error('Error updating task status:', error);
+      }
+    }
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Kanban Board
+        Dashboard
       </Typography>
-      <Box sx={{ display: 'flex', overflowX: 'auto', pb: 2 }}>
-        {data.columnOrder.map((columnId) => {
-          const column = data.columns[columnId];
-          const tasks = column.taskIds.map((taskId) => data.tasks[taskId]);
 
-          return (
+      <Grid container spacing={2}>
+        {tasks.map((task) => (
+          <Grid item xs={12} sm={6} md={4} key={task.id}>
             <Paper
-              key={column.id}
               sx={{
                 p: 2,
-                mx: 1,
-                minWidth: '250px',
-                maxWidth: '300px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-start',
-                minHeight: '100px',
-                overflowY: 'auto',
+                minHeight: '150px',
+                backgroundColor: '#f5f5f5',
+                boxShadow: 1,
+                borderRadius: 1,
               }}
             >
-              <Typography variant="h6">{column.title}</Typography>
-              <Divider sx={{ my: 1 }} />
-              {tasks.map((task) => (
-                <Paper
-                  key={task.id}
-                  sx={{
-                    mb: 1,
-                    p: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    backgroundColor: '#f5f5f5',
-                    boxShadow: 1,
-                    borderRadius: 1,
-                    width: '100%', 
-                    maxWidth: '300px', 
-                  }}
-                >
-                  {task.content}
-                  <IconButton
-                    sx={{ ml: 'auto' }}
-                    onClick={() => handleClickOpen(task)}
-                  >
-                    <MoreVert />
-                  </IconButton>
-                </Paper>
-              ))}
+              <Typography variant="h6">{task.taskName}</Typography>
+              <Typography variant="body2">{`Date: ${task.date} ${task.time}`}</Typography>
+              <Typography variant="body2">{`Status: ${task.status}`}</Typography>
+              <IconButton
+                sx={{ mt: 'auto' }}
+                onClick={() => handleClickOpen(task)}
+              >
+                <MoreVert />
+              </IconButton>
             </Paper>
-          );
-        })}
-      </Box>
+          </Grid>
+        ))}
+      </Grid>
 
-      {/* Dialog for Task Details */}
+      {/* Dialog for Task Status Update */}
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Task Details</DialogTitle>
+        <DialogTitle>Update Task Status</DialogTitle>
         <DialogContent>
           {selectedTask && (
-            <>
-              <Typography variant="h6">{selectedTask.content}</Typography>
-              <Typography variant="body2">{selectedTask.description}</Typography>
-            </>
+            <FormControl fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              >
+                <MenuItem value="Not Started">Not Started</MenuItem>
+                <MenuItem value="In Progress">In Progress</MenuItem>
+                <MenuItem value="Done">Done</MenuItem>
+              </Select>
+            </FormControl>
           )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Close
+            Cancel
+          </Button>
+          <Button onClick={handleStatusChange} color="primary">
+            Update Status
           </Button>
         </DialogActions>
       </Dialog>

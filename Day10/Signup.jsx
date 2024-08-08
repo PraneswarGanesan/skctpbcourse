@@ -13,7 +13,7 @@ const Signup = () => {
     email: '',
     password: '',
     company: '',
-    role: '', 
+    role: '',  // Add role to the state
   });
 
   const [error, setError] = useState(null);

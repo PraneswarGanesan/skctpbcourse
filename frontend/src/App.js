@@ -16,24 +16,32 @@ const App = () => {
 
   const handleLogin = (userInfo) => {
     setUser(userInfo);
+    console.log(userInfo);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('username');
     localStorage.removeItem('expiration');
+    localStorage.removeItem('role');
+    localStorage.removeItem('id');
+    localStorage.removeItem('data');
+    
     setUser(null);
   };
 
   const isSessionValid = () => {
     const expirationTime = localStorage.getItem('expiration');
-    if (!expirationTime) return false;
+    if (!expirationTime)return false;
     return new Date().getTime() < parseInt(expirationTime, 10);
+    
   };
   
 
   const ProtectedRoute = ({ element }) => {
+  
     return isSessionValid() ? element : <Navigate to="/login" />;
   };
+
 
   return (
     <Router>

@@ -16,22 +16,20 @@ public class Team {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
-    private Project project; // Reference to the project entity
-
+    private Project project; 
     @NotNull
-    private Long leadId; // Team lead ID
+    private Long leadId; 
 
     @ElementCollection
-    private List<Long> memberIds; // List of team member IDs
-
-    // Additional fields for displaying usernames
-    @Transient
-    private String leadUsername; // Use @Transient to indicate it's not stored in DB
+    private List<Long> memberIds; 
 
     @Transient
-    private List<String> memberUsernames; // Use @Transient to indicate it's not stored in DB
+    private String leadUsername; 
 
-    // Getters and Setters
+    @Transient
+    private List<String> memberUsernames; 
+
+
     public Long getId() {
         return id;
     }

@@ -1,36 +1,11 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Box, Typography, Card, CardContent, Grid, Divider } from '@mui/material';
 import { styled } from '@mui/system';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import TeamLeadSidePanel from '../TeamLeadSidePanel';
-
-
-const tasksRemaining = 5;
-const currentProject = "Project Alpha";
-const recentChanges = [
-  { id: 1, change: 'Updated task 3', date: '2024-07-25' },
-  { id: 2, change: 'Completed task 5', date: '2024-07-24' },
-  { id: 3, change: 'Added new task 7', date: '2024-07-23' },
-];
-
-const kanbanStats = {
-  toDo: 3,
-  inProgress: 1,
-  done: 1,
-};
-
-
-const pieData = [
-  { name: 'To Do', value: kanbanStats.toDo },
-  { name: 'In Progress', value: kanbanStats.inProgress },
-  { name: 'Completed', value: kanbanStats.done },
-];
-
-
-const COLORS = ['#FF9999', '#66B2FF', '#99FF99'];
 
 const StyledCard = styled(Card)({
   borderRadius: '12px',
@@ -62,7 +37,53 @@ const ActivityItem = styled(Box)({
   borderBottom: '1px solid #e0e0e0',
 });
 
+const COLORS = ['#FF9999', '#66B2FF', '#99FF99'];
+
 const Dashboard = () => {
+  const [tasks, setTasks] = useState([]);
+  const [recentChanges, setRecentChanges] = useState([]);
+  const [currentProject, setCurrentProject] = useState('');
+  const [teamMembers, setTeamMembers] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch all tasks
+        const tasksResponse = await axios.get('http://localhost:8080/api/employeetasks/all');
+        setTasks(tasksResponse.data);
+
+        // Fetch recent changes (assuming an API endpoint exists)
+        // For demo purposes, using static recent changes
+        setRecentChanges(recentChanges);
+
+        // Fetch current project and team members
+        const currentUser = JSON.parse(localStorage.getItem('teamLead')); // Assuming the team lead info is stored in localStorage
+        const projectResponse = await axios.get(`http://localhost:8080/api/teams/${currentUser.teamId}`);
+        const projectData = projectResponse.data;
+        setCurrentProject(projectData.project.name);
+        setTeamMembers(projectData.memberUsernames.length);
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Calculate task distribution for the pie chart
+  const kanbanStats = {
+    toDo: tasks.filter(task => task.status === 'Not Started').length,
+    inProgress: tasks.filter(task => task.status === 'In Progress').length,
+    done: tasks.filter(task => task.status === 'Completed').length,
+  };
+
+  const pieData = [
+    { name: 'To Do', value: kanbanStats.toDo },
+    { name: 'In Progress', value: kanbanStats.inProgress },
+    { name: 'Completed', value: kanbanStats.done },
+  ];
+
   return (
     <Box sx={{ display: 'flex' }}>
       <TeamLeadSidePanel />
@@ -74,8 +95,8 @@ const Dashboard = () => {
           <Grid item xs={12} md={4}>
             <StyledCard>
               <CardContent>
-                <CardHeader variant="h6">Tasks Remaining</CardHeader>
-                <CardValue variant="h4">{tasksRemaining}</CardValue>
+                <CardHeader variant="h6">Team Members</CardHeader>
+                <CardValue variant="h4">{teamMembers}</CardValue>
               </CardContent>
             </StyledCard>
           </Grid>
@@ -117,7 +138,7 @@ const Dashboard = () => {
               <CardContent>
                 <Typography variant="h6" gutterBottom>Recent Changes</Typography>
                 <RecentActivity>
-                  {recentChanges.map(change => (
+                  {recentChanges.slice(0, 5).map(change => (
                     <ActivityItem key={change.id}>
                       <Typography variant="body1">{change.change}</Typography>
                       <Typography variant="caption" color="textSecondary">{change.date}</Typography>
