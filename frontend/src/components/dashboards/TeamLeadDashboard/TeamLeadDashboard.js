@@ -7,7 +7,6 @@ import Dashboard from './components/DashBoard';
 import ManageTeam from './components/ManageTeam';
 import Profile from './components/Profile';
 import ShiftScheduling from './components/ShiftScheduling';
-
 const TeamLeadDashboard = () => {
   return (
     <Box sx={{ display: 'flex' }}>

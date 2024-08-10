@@ -20,11 +20,29 @@ public class TeamLeadScheduleService {
         return userRepository.findByRole("team_lead");
     }
 
-    public TeamLeadSchedule getScheduleForTeamLead(Long teamLeadId) {
+    public List<TeamLeadSchedule> getSchedulesForTeamLead(Long teamLeadId) {
         return teamLeadScheduleRepository.findByTeamLeadId(teamLeadId);
     }
+    
 
     public TeamLeadSchedule saveOrUpdateSchedule(TeamLeadSchedule schedule) {
         return teamLeadScheduleRepository.save(schedule);
+    }
+    public TeamLeadSchedule updateSchedule(Long id, TeamLeadSchedule schedule) {
+        if (teamLeadScheduleRepository.existsById(id)) {
+            schedule.setId(id); // Ensure the ID is set for update
+            return teamLeadScheduleRepository.save(schedule);
+        } else {
+            return null; // Return null if not found
+        }
+    }
+    
+    public boolean deleteSchedule(Long id) {
+        if (teamLeadScheduleRepository.existsById(id)) {
+            teamLeadScheduleRepository.deleteById(id);
+            return true;
+        } else {
+            return false; // Return false if not found
+        }
     }
 }

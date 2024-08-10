@@ -21,12 +21,12 @@ public class SecurityConfig {
         http
    .csrf(csrf -> csrf.disable())
    .authorizeHttpRequests(authz -> authz
-    //    .requestMatchers("/api/auth/**","/api/auth/register","/api/auth/login","/api/auth/profile").permitAll()
        .requestMatchers("/api/auth/**","/api/auth/register","/api/auth/login","/api/auth/profile").permitAll()
-       .requestMatchers("/api/admin/**", "/api/employees/**", "/api/employeetasks/**", "/api/projects/**", "/api/tasks/**", "/api/teams/**", "/api/product_manager/schedule/**", "/api/product-manager/**", "/api/teams/**").permitAll()
+       .requestMatchers("/api/admin/**", "/api/employees/**", "/api/employeetasks/**", "/api/projects/**", "/api/tasks/**", "/api/teams/**", "/api/product_manager/schedule/**", "/api/product-manager/**", "/api/teams/**","/api/timeoffrequests/**").permitAll()
        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() 
        .requestMatchers("/api/contact/**").permitAll() 
-       .requestMatchers("api/employees/schedules/**").permitAll() 
+       .requestMatchers("api/schedules/**").permitAll() 
+       .requestMatchers("/api/timeoffs/**").permitAll() 
        .anyRequest().authenticated()
    )
    .formLogin(form -> form.disable())

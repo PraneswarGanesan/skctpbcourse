@@ -1,32 +1,52 @@
 package com.example.backendlol.backend.service;
 
 import com.example.backendlol.backend.model.EmployeeSchedule;
-import com.example.backendlol.backend.model.User;
 import com.example.backendlol.backend.repository.EmployeeScheduleRepository;
-import com.example.backendlol.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeScheduleService {
 
-    @Autowired
-    private UserRepository userRepository;
-    
-    @Autowired
-    private EmployeeScheduleRepository employeeScheduleRepository;
+    private final EmployeeScheduleRepository employeeScheduleRepository;
 
-    public List<User> getAllEmployees() {
-        return userRepository.findByRole("employee");
+    @Autowired
+    public EmployeeScheduleService(EmployeeScheduleRepository employeeScheduleRepository) {
+        this.employeeScheduleRepository = employeeScheduleRepository;
     }
 
-    public EmployeeSchedule getScheduleForEmployee(Long employeeId) {
+    public List<EmployeeSchedule> getAllSchedules() {
+        return employeeScheduleRepository.findAll();
+    }
+
+    public Optional<EmployeeSchedule> getScheduleById(Long id) {
+        return employeeScheduleRepository.findById(id);
+    }
+
+    public List<EmployeeSchedule> getSchedulesByEmployeeId(Long employeeId) {
         return employeeScheduleRepository.findByEmployeeId(employeeId);
     }
 
-    public EmployeeSchedule saveOrUpdateSchedule(EmployeeSchedule schedule) {
+    public List<EmployeeSchedule> getSchedulesByEmployeeUsername(String username) {
+        return employeeScheduleRepository.findByEmployeeUsername(username);
+    }
+
+    public EmployeeSchedule createSchedule(EmployeeSchedule schedule) {
         return employeeScheduleRepository.save(schedule);
+    }
+
+    public EmployeeSchedule updateSchedule(Long id, EmployeeSchedule updatedSchedule) {
+        if (employeeScheduleRepository.existsById(id)) {
+            updatedSchedule.setId(id);
+            return employeeScheduleRepository.save(updatedSchedule);
+        }
+        return null;
+    }
+
+    public void deleteSchedule(Long id) {
+        employeeScheduleRepository.deleteById(id);
     }
 }

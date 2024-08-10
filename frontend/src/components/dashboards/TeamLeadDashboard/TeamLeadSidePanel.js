@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
-import { Home, Message, AccountCircle, Work } from '@mui/icons-material';
+import { Home, Message, AccountCircle, Work , Schedule, Event } from '@mui/icons-material';
 import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 
 const TeamLeadSidePanel = () => {

@@ -35,14 +35,11 @@ const EmployeeSidePanel = () => {
           <ListItemIcon><AutoAwesomeMosaicIcon /></ListItemIcon>
           <ListItemText primary="Dashboard" />
         </ListItem>
-        <ListItem button component={Link} to="/employee-dashboard/message">
+        {/* <ListItem button component={Link} to="/employee-dashboard/message">
           <ListItemIcon><Message /></ListItemIcon>
           <ListItemText primary="Message" />
-        </ListItem>
-        <ListItem button component={Link} to="/employee-dashboard/profile">
-          <ListItemIcon><AccountCircle /></ListItemIcon>
-          <ListItemText primary="Profile" />
-        </ListItem>
+        </ListItem> */}
+        
         <ListItem button component={Link} to="/employee-dashboard/my-shifts">
           <ListItemIcon><Schedule /></ListItemIcon>
           <ListItemText primary="My Shifts" />
@@ -50,6 +47,10 @@ const EmployeeSidePanel = () => {
         <ListItem button component={Link} to="/employee-dashboard/time-off">
           <ListItemIcon><Event /></ListItemIcon>
           <ListItemText primary="Time Off" />
+        </ListItem>
+        <ListItem button component={Link} to="/employee-dashboard/profile">
+          <ListItemIcon><AccountCircle /></ListItemIcon>
+          <ListItemText primary="Profile" />
         </ListItem>
       </List>
       <Divider />

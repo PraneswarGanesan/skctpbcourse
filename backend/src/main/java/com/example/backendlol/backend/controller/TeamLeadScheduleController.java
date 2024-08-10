@@ -24,19 +24,39 @@ public class TeamLeadScheduleController {
 
     // Endpoint to get the schedule of a specific team lead
     @GetMapping("/schedule/{teamLeadId}")
-    public ResponseEntity<TeamLeadSchedule> getTeamLeadSchedule(@PathVariable Long teamLeadId) {
-        TeamLeadSchedule schedule = teamLeadScheduleService.getScheduleForTeamLead(teamLeadId);
-        if (schedule != null) {
-            return ResponseEntity.ok(schedule);
+    public ResponseEntity<List<TeamLeadSchedule>> getTeamLeadSchedule(@PathVariable Long teamLeadId) {
+        List<TeamLeadSchedule> schedules = teamLeadScheduleService.getSchedulesForTeamLead(teamLeadId);
+        if (schedules != null && !schedules.isEmpty()) {
+            return ResponseEntity.ok(schedules);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build(); // Use noContent() for empty lists
         }
     }
+    
 
-    // Endpoint to create or update the schedule for a team lead
     @PostMapping("/schedule")
     public ResponseEntity<TeamLeadSchedule> createOrUpdateSchedule(@RequestBody TeamLeadSchedule schedule) {
         TeamLeadSchedule savedSchedule = teamLeadScheduleService.saveOrUpdateSchedule(schedule);
         return ResponseEntity.ok(savedSchedule);
+    }
+    @PutMapping("/schedule/{id}")
+    public ResponseEntity<TeamLeadSchedule> updateSchedule(@PathVariable Long id, @RequestBody TeamLeadSchedule schedule) {
+        TeamLeadSchedule updatedSchedule = teamLeadScheduleService.updateSchedule(id, schedule);
+        if (updatedSchedule != null) {
+            return ResponseEntity.ok(updatedSchedule);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    // Endpoint to delete a schedule
+    @DeleteMapping("/schedule/{id}")
+    public ResponseEntity<Void> deleteSchedule(@PathVariable Long id) {
+        boolean isDeleted = teamLeadScheduleService.deleteSchedule(id);
+        if (isDeleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

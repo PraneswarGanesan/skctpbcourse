@@ -10,5 +10,6 @@ import java.util.*;
 public interface EmployeeTaskRepository extends JpaRepository<EmployeeTask, Long> {
 
     List<EmployeeTask> findByEmployeeId(Long employeeId);
+    List<EmployeeTask> findByTeamLeadId(Long teamLeadId);
 
 }

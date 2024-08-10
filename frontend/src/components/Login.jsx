@@ -19,29 +19,27 @@ const Login = ({ onLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
     try {
       const response = await axios.post('http://localhost:8080/api/auth/login', {
         username: form.username,
         password: form.password,
       });
   
-      const userInfo = response.data;
-      console.log("User Info:", userInfo); 
+      const { token, user } = response.data;
+  
+      const expirationTime = new Date().getTime() + 5000000;
 
-      const expirationTime = new Date().getTime() + 5000; 
-  
-      localStorage.setItem('username', form.username);
+      localStorage.setItem('username', user.username);
       localStorage.setItem('expiration', expirationTime);
-      localStorage.setItem('role', userInfo.role);
-      localStorage.setItem('id', userInfo.id);
-      localStorage.setItem('data', JSON.stringify(userInfo));
-      console.log("Expiration Time:", expirationTime);
-      console.log("Expiration Time:", localStorage.getItem('expiration'));
+      localStorage.setItem('role', user.role);
+      localStorage.setItem('id', user.id);
+      localStorage.setItem('data', JSON.stringify(user));
+      localStorage.setItem('token', token);
+
+      onLogin(user);
   
-      onLogin(userInfo);
-  
-      // Handle role as a single string rather than an array
-      switch (userInfo.role) {  // Adjusted for single role string
+      switch (user.role) {
         case 'admin':
           navigate('/admin-dashboard');
           break;
@@ -56,12 +54,13 @@ const Login = ({ onLogin }) => {
           break;
         default:
           navigate('/');
-      } 
+      }
     } catch (err) {
-      console.error("Login Error:", err); // Log error for debugging
+      console.error("Login Error:", err);
       setError('Login failed. Please check your credentials and try again.');
     }
   };
+  
   
   
   return (

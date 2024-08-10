@@ -1,49 +1,64 @@
 package com.example.backendlol.backend.controller;
 
+import com.example.backendlol.backend.model.EmployeeSchedule;
 import com.example.backendlol.backend.service.EmployeeScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.backendlol.backend.model.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/employees")
+@RequestMapping("/api/schedules")
 public class EmployeeScheduleController {
 
+    private final EmployeeScheduleService employeeScheduleService;
+
     @Autowired
-    private EmployeeScheduleService employeeScheduleService;
-
-    @GetMapping("/schedules")
-    public ResponseEntity<List<User>> getAllSchedules() {
-        List<User> employees = employeeScheduleService.getAllEmployees();
-        return ResponseEntity.ok(employees);
+    public EmployeeScheduleController(EmployeeScheduleService employeeScheduleService) {
+        this.employeeScheduleService = employeeScheduleService;
     }
 
-    @GetMapping("/schedules/{employeeId}")
-    public ResponseEntity<EmployeeSchedule> getScheduleByEmployeeId(@PathVariable Long employeeId) {
-        EmployeeSchedule schedule = employeeScheduleService.getScheduleForEmployee(employeeId);
-        return schedule != null ? ResponseEntity.ok(schedule) : ResponseEntity.notFound().build();
+    @GetMapping
+    public ResponseEntity<List<EmployeeSchedule>> getAllSchedules() {
+        return ResponseEntity.ok(employeeScheduleService.getAllSchedules());
     }
 
-    @PostMapping("/schedules")
+    @GetMapping("/{id}")
+    public ResponseEntity<EmployeeSchedule> getScheduleById(@PathVariable Long id) {
+        Optional<EmployeeSchedule> schedule = employeeScheduleService.getScheduleById(id);
+        return schedule.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/employee/{employeeId}")
+    public ResponseEntity<List<EmployeeSchedule>> getSchedulesByEmployeeId(@PathVariable Long employeeId) {
+        return ResponseEntity.ok(employeeScheduleService.getSchedulesByEmployeeId(employeeId));
+    }
+
+    @GetMapping("/username/{username}")
+    public ResponseEntity<List<EmployeeSchedule>> getSchedulesByEmployeeUsername(@PathVariable String username) {
+        return ResponseEntity.ok(employeeScheduleService.getSchedulesByEmployeeUsername(username));
+    }
+
+    @PostMapping
     public ResponseEntity<EmployeeSchedule> createSchedule(@RequestBody EmployeeSchedule schedule) {
-        EmployeeSchedule createdSchedule = employeeScheduleService.saveOrUpdateSchedule(schedule);
+        EmployeeSchedule createdSchedule = employeeScheduleService.createSchedule(schedule);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdSchedule);
     }
 
-    @PutMapping("/schedules/{id}")
-    public ResponseEntity<EmployeeSchedule> updateSchedule(@PathVariable Long id, @RequestBody EmployeeSchedule schedule) {
-        schedule.setId(id);
-        EmployeeSchedule updatedSchedule = employeeScheduleService.saveOrUpdateSchedule(schedule);
-        return ResponseEntity.ok(updatedSchedule);
+    @PutMapping("/{id}")
+    public ResponseEntity<EmployeeSchedule> updateSchedule(
+            @PathVariable Long id,
+            @RequestBody EmployeeSchedule updatedSchedule) {
+        EmployeeSchedule schedule = employeeScheduleService.updateSchedule(id, updatedSchedule);
+        return schedule != null ? ResponseEntity.ok(schedule) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/schedules/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSchedule(@PathVariable Long id) {
-        employeeScheduleService.saveOrUpdateSchedule(new EmployeeSchedule() {{ setId(id); }});
+        employeeScheduleService.deleteSchedule(id);
         return ResponseEntity.noContent().build();
     }
 }

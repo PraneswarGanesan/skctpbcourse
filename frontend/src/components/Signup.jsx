@@ -41,7 +41,7 @@ const Signup = () => {
       setError(error.response?.data || 'An error occurred. Please try again.');
       console.error(error.response?.data || error.message);
     }
-  };
+  };  
 
   return (
     <div className='signup-container'>

@@ -25,6 +25,7 @@ const App = () => {
     localStorage.removeItem('role');
     localStorage.removeItem('id');
     localStorage.removeItem('data');
+    localStorage.removeItem('token');
     
     setUser(null);
   };

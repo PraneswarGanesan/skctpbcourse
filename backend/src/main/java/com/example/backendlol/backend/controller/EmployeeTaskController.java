@@ -57,10 +57,25 @@ public class EmployeeTaskController {
         EmployeeTask updatedTask = employeeTaskService.updateTaskStatus(id, status);
         return updatedTask != null ? ResponseEntity.ok(updatedTask) : ResponseEntity.notFound().build();
     }
+    @PutMapping("/{id}/status/{status}")
+    public ResponseEntity<EmployeeTask> updateTaskStatus(  @PathVariable Long id,  @PathVariable String status) {
+        // Validate the status value
+        if (status == null || status.isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        EmployeeTask updatedTask = employeeTaskService.updateTaskStatuss(id, status);
+        return updatedTask != null ? ResponseEntity.ok(updatedTask) : ResponseEntity.notFound().build();
+    }
+
 
     @GetMapping("/employee/{employeeId}")
     public ResponseEntity<List<EmployeeTask>> getTasksByEmployeeId(@PathVariable Long employeeId) {
         List<EmployeeTask> tasks = employeeTaskService.getTasksByEmployeeId(employeeId);
         return ResponseEntity.ok(tasks);
+    }
+    @GetMapping("/team-lead/{teamLeadId}")
+    public ResponseEntity<List<EmployeeTask>> getTasksByTeamLeadId(@PathVariable Long teamLeadId) {
+        List<EmployeeTask> tasks = employeeTaskService.getTasksByTeamLeadId(teamLeadId);
+        return ResponseEntity.ok(tasks); // Add this endpoint
     }
 }

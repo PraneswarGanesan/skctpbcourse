@@ -86,4 +86,18 @@ public class TeamService {
     public List<User> getUsersByIds(List<Long> ids) {
         return userRepository.findAllById(ids);
     }
+    // public List<Team> findTeamsByLeadUsername(String leadUsername) {
+    //     return teamRepository.findByLeadUsername(leadUsername);
+    // }
+
+    // public List<Team> findTeamsByEmployeeUsername(String employeeUsername) {
+    //     return teamRepository.findByEmployeeUsername(employeeUsername);
+    // }
+    public List<Team> getTeamsByLeadId(Long leadId) {
+        return teamRepository.findByLeadId(leadId);
+    }
+
+    public List<Team> getTeamsByEmployeeId(Long employeeId) {
+        return teamRepository.findByEmployeeId(employeeId);
+    }
 }

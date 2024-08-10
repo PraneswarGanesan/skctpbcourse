@@ -15,6 +15,8 @@ const ManageUsers = () => {
     email: '',
     password: '',
     role: '',
+    username:'',
+    company:'',
   });
 
   useEffect(() => {
@@ -37,6 +39,8 @@ const ManageUsers = () => {
       lastName: user.lastName,
       email: user.email,
       role: user.role,
+      username: user.username,
+      company: user.company,
     });
     setOpen(true);
   };
@@ -162,11 +166,27 @@ const ManageUsers = () => {
             sx={{ mb: 2 }}
           />
           <TextField
+            label="Company"
+            variant="outlined"
+            fullWidth
+            value={editUser.company}
+            onChange={(e) => setEditUser({ ...editUser, company: e.target.value })}
+            sx={{ mb: 2 }}
+          />
+          <TextField
             label="Email"
             variant="outlined"
             fullWidth
             value={editUser.email}
             onChange={(e) => setEditUser({ ...editUser, email: e.target.value })}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Username"
+            variant="outlined"
+            fullWidth
+            value={editUser.username}
+            onChange={(e) => setEditUser({ ...editUser, username: e.target.value })}
             sx={{ mb: 2 }}
           />
           <TextField

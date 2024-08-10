@@ -1,151 +1,109 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import {
-  Box,
-  Typography,
-  Paper,
-  Grid,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel
-} from '@mui/material';
-import { MoreVert } from '@mui/icons-material';
+import { Box, Typography, Card, CardContent, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import EmployeeSidePanel from '../EmployeeSidePanel';
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [status, setStatus] = useState('');
-  const [userId, setUserId] = useState(null); // Store user ID here
+  const [status, setStatus] = useState({});
+  const [team, setTeam] = useState(null);
 
-  // Replace with your method to fetch the current logged-in user ID
   useEffect(() => {
-    // Example to fetch user ID, you may need to replace this with actual implementation
-    const fetchUserId = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get('/api/current-user');
-        setUserId(response.data.id); // Assuming response contains user ID
+        // Fetch employee ID from local storage
+        const employeeId = JSON.parse(localStorage.getItem('id'));
+        if (!employeeId) return;
+
+        // Fetch tasks for the employee
+        const tasksResponse = await axios.get(`http://localhost:8080/api/employeetasks/employee/${employeeId}`);
+        setTasks(tasksResponse.data);
+
+        // Initialize status state
+        const initialStatus = {};
+        tasksResponse.data.forEach(task => {
+          initialStatus[task.id] = task.status;
+        });
+        setStatus(initialStatus);
+
+        // Fetch team details for the employee
+        const teamResponse = await axios.get(`http://localhost:8080/api/teams/by-employee/${employeeId}`);
+        setTeam(teamResponse.data[0]); // Assuming only one team per employee
       } catch (error) {
-        console.error('Error fetching user ID:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
-    fetchUserId();
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    if (userId) {
-      const fetchTasks = async () => {
-        console.log(userId);
-        try {
-          const response = await axios.get(`http://localhost:8080/api/employeetasks/employee/${userId}`);
-          setTasks(response.data);
-        } catch (error) {
-          console.error('Error fetching tasks:', error);
-        }
-      };
-
-      fetchTasks();
-    }
-  }, [userId]);
-
-  const handleClickOpen = (task) => {
-    setSelectedTask(task);
-    setOpen(true);
-    setStatus(task.status); // Set the current status when opening the dialog
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setSelectedTask(null);
-  };
-
-  const handleStatusChange = async () => {
-    if (selectedTask) {
-      try {
-        const payload = { status };
-        await axios.patch(`http://localhost:8080/api/employeetasks/${selectedTask.id}/status`, payload);
-        setTasks((prevTasks) => 
-          prevTasks.map(task => 
-            task.id === selectedTask.id ? { ...task, status } : task
-          )
-        );
-        handleClose();
-      } catch (error) {
-        console.error('Error updating task status:', error);
-      }
+  const handleStatusChange = async (taskId, newStatus) => {
+    try {
+      // Update status of the task using PUT method
+      await axios.put(`http://localhost:8080/api/employeetasks/${taskId}/status/${newStatus}`);
+      // Update local state with the new status
+      setStatus(prevStatus => ({
+        ...prevStatus,
+        [taskId]: newStatus
+      }));
+    } catch (error) {
+      console.error('Error updating task status:', error);
     }
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Dashboard
-      </Typography>
+    <Box sx={{ display: 'flex' , ml:1}}>
+      <EmployeeSidePanel sx={{ flexShrink: 0, width: 150 }} /> {/* Adjust width and prevent shrinking */}
+      <Box sx={{ flexGrow: 1, p: 0 }}> {/* Adjust padding to reduce margin */}
+        <Typography variant="h4" component="h2" sx={{ mb: 4 }}>
+          Employee Dashboard
+        </Typography>
 
-      <Grid container spacing={2}>
-        {tasks.map((task) => (
-          <Grid item xs={12} sm={6} md={4} key={task.id}>
-            <Paper
-              sx={{
-                p: 2,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                minHeight: '150px',
-                backgroundColor: '#f5f5f5',
-                boxShadow: 1,
-                borderRadius: 1,
-              }}
-            >
-              <Typography variant="h6">{task.taskName}</Typography>
-              <Typography variant="body2">{`Date: ${task.date} ${task.time}`}</Typography>
-              <Typography variant="body2">{`Status: ${task.status}`}</Typography>
-              <IconButton
-                sx={{ mt: 'auto' }}
-                onClick={() => handleClickOpen(task)}
-              >
-                <MoreVert />
-              </IconButton>
-            </Paper>
-          </Grid>
-        ))}
-      </Grid>
+        {/* Display team details */}
+        {team && (
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h5" component="h3" sx={{ mb: 2 }}>
+              My team Details
+            </Typography>
+            <Card sx={{ mb: 2 }}>
+              <CardContent>
+                <Typography variant="h6">{`Team Name: ${team.name}`}</Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>Project: {team.project.name}</Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>Description: {team.project.description}</Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>Lead Username: {team.leadUsername}</Typography>
+                <Typography variant="body2">Members: {team.memberUsernames.join(', ')}</Typography>
+              </CardContent>
+            </Card>
+          </Box>
+        )}
 
-      {/* Dialog for Task Status Update */}
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Update Task Status</DialogTitle>
-        <DialogContent>
-          {selectedTask && (
-            <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                <MenuItem value="Not Started">Not Started</MenuItem>
-                <MenuItem value="In Progress">In Progress</MenuItem>
-                <MenuItem value="Done">Done</MenuItem>
-              </Select>
-            </FormControl>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleStatusChange} color="primary">
-            Update Status
-          </Button>
-        </DialogActions>
-      </Dialog>
+        {/* Display tasks */}
+        <Grid container spacing={3}>
+          {tasks.map(task => (
+            <Grid item xs={12} sm={6} md={4} key={task.id}>
+              <Card sx={{ mb: 2, width: 300, height: 200 }}>
+                <CardContent>
+                  <Typography variant="h6" noWrap>{task.taskName}</Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>Date: {task.date}</Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>Time: {task.time}</Typography>
+                  <FormControl fullWidth sx={{ mt: 2 }}>
+                    <InputLabel>Status</InputLabel>
+                    <Select
+                      value={status[task.id] || task.status}
+                      onChange={(e) => handleStatusChange(task.id, e.target.value)}
+                       label="status"
+                    >
+                      <MenuItem value="Not Started">Not Started</MenuItem>
+                      <MenuItem value="In Progress">In Progress</MenuItem>
+                      <MenuItem value="Completed">Completed</MenuItem>
+                    </Select>
+                  </FormControl>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
     </Box>
   );
 };

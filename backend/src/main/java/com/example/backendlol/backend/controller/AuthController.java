@@ -29,41 +29,30 @@ public class AuthController {
         User registeredUser = userService.registerUser(user);
         return ResponseEntity.ok(registeredUser);
     }
-
     // @PostMapping("/login")
-    // public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
-    //     Optional<User> optionalUser = userService.findByUsername(loginRequest.getUsername());
-    //     if (optionalUser.isPresent()) {
-    //         User user = optionalUser.get();
-    //         if (userService.checkPassword(user, loginRequest.getPassword())) {
-    //             String token = jwtService.generateToken(user.getUsername());
-    //             Map<String, Object> response = new HashMap<>();
-    //             response.put("token", token);
-    //             response.put("username", user.getUsername());
-    //             response.put("roles", user.getRole()); // Ensure `roles` is returned
-    //             response.put("firstName", user.getFirstName());
-    //             response.put("lastName", user.getLastName());
-    //             response.put("email", user.getEmail());
-    //             response.put("company", user.getCompany());
-    //             // Include other fields if necessary
-    //             return ResponseEntity.ok(response);
-    //         } else {
-    //             return ResponseEntity.badRequest().body("Invalid password");
-    //         }
+    // public ResponseEntity<?> loginUser(@RequestBody User user) {
+    //     Optional<User> optionalUser = userService.findByUsername(user.getUsername());
+    //     if (optionalUser.isPresent() && userService.checkPassword(optionalUser.get(), user.getPassword())) {
+    //         String token = jwtService.generateToken(user.getUsername());
+    //         Map<String, Object> response = new HashMap<>();
+         
+    //         return ResponseEntity.ok(optionalUser.get());
     //     }
-    //     return ResponseEntity.badRequest().body("Invalid username");
-    // }  
-
+    //     return ResponseEntity.badRequest().body("Invalid email or password");
+    // }
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody User user) {
-        Optional<User> optionalUser = userService.findByUsername(user.getUsername());
-        if (optionalUser.isPresent() && userService.checkPassword(optionalUser.get(), user.getPassword())) {
-            String token = jwtService.generateToken(user.getUsername());
-            Map<String, Object> response = new HashMap<>();
-            return ResponseEntity.ok(optionalUser.get());
-        }
-        return ResponseEntity.badRequest().body("Invalid email or password");
+public ResponseEntity<?> loginUser(@RequestBody User user) {
+    Optional<User> optionalUser = userService.findByUsername(user.getUsername());
+    if (optionalUser.isPresent() && userService.checkPassword(optionalUser.get(), user.getPassword())) {
+        String token = jwtService.generateToken(user.getUsername());
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", optionalUser.get());
+        response.put("token", token);
+        return ResponseEntity.ok(response);
     }
+    return ResponseEntity.badRequest().body("Invalid username or password");
+}
+
 
     
         

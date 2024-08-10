@@ -37,7 +37,17 @@ public class EmployeeTaskService {
     public void deleteTask(Long id) {
         employeeTaskRepository.deleteById(id);
     }
-
+    public EmployeeTask updateTaskStatuss(Long id, String status) {
+        Optional<EmployeeTask> taskOptional = employeeTaskRepository.findById(id);
+        if (taskOptional.isPresent()) {
+            EmployeeTask task = taskOptional.get();
+            // Update only the status field
+            task.setStatus(status);
+            return employeeTaskRepository.save(task); // Save the task with updated status
+        } else {
+            return null; // Task not found
+        }
+    }
     public EmployeeTask updateTaskStatus(Long id, String status) {
         Optional<EmployeeTask> optionalTask = employeeTaskRepository.findById(id);
         if (optionalTask.isPresent()) {
@@ -51,4 +61,8 @@ public class EmployeeTaskService {
     public List<EmployeeTask> getTasksByEmployeeId(Long employeeId) {
         return employeeTaskRepository.findByEmployeeId(employeeId);
     }
+    public List<EmployeeTask> getTasksByTeamLeadId(Long teamLeadId) {
+        return employeeTaskRepository.findByTeamLeadId(teamLeadId); // Add this method
+    }
+
 }

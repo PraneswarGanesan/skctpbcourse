@@ -1,17 +1,40 @@
-// src/components/dashboards/EmployeeDashboard/components/TimeOff.js
-import React, { useState } from 'react';
-import { Box, Typography, Paper, Divider, Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import {
+  Box,
+  Typography,
+  Paper,
+  Divider,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
+  IconButton
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import SidePanel from '../EmployeeSidePanel';
 
-const initialRequests = [
-  { id: 1, date: '2024-08-01', reason: 'Medical Appointment', status: 'Approved' },
-  { id: 2, date: '2024-08-05', reason: 'Family Event', status: 'Pending' },
-];
-
 const TimeOff = () => {
-  const [requests, setRequests] = useState(initialRequests);
+  const [requests, setRequests] = useState([]);
   const [open, setOpen] = useState(false);
   const [newRequest, setNewRequest] = useState({ date: '', reason: '' });
+
+  // Fetch time-off requests for the logged-in employee
+  useEffect(() => {
+    const fetchRequests = async () => {
+      const employeeName = localStorage.getItem('username'); // Assuming username is stored in localStorage
+      try {
+        const response = await axios.get(`http://localhost:8080/api/timeoffs/by-employee/${employeeName}`);
+        setRequests(response.data);
+      } catch (error) {
+        console.error('Error fetching time-off requests:', error);
+      }
+    };
+
+    fetchRequests();
+  }, []);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -26,10 +49,36 @@ const TimeOff = () => {
     setNewRequest({ ...newRequest, [name]: value });
   };
 
-  const handleSubmit = () => {
-    setRequests([...requests, { ...newRequest, id: requests.length + 1, status: 'Pending' }]);
-    setOpen(false);
-    setNewRequest({ date: '', reason: '' });
+  const handleSubmit = async () => {
+    const id = localStorage.getItem('id'); // Assuming id is stored in localStorage
+    const employeeName = localStorage.getItem('username'); 
+    console.log(employeeName); 
+    console.log(id); // Assuming username is stored in localStorage
+    try {
+      const payload = {
+        id: id, // Include the ID in the request payload
+        employeeId: id, // Include employeeId
+        employeeName: employeeName, // Include employeeName
+        reason: newRequest.reason,
+        status: 'Pending', // Default status
+        requestDate: new Date().toISOString(), // Set current date and time
+      };
+      const response = await axios.post('http://localhost:8080/api/timeoffs', payload);
+      setRequests([...requests, response.data]);
+      setOpen(false);
+      setNewRequest({ date: '', reason: '' });
+    } catch (error) {
+      console.error('Error submitting time-off request:', error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/timeoffs/${id}`);
+      setRequests(requests.filter((request) => request.id !== id));
+    } catch (error) {
+      console.error('Error deleting time-off request:', error);
+    }
   };
 
   return (
@@ -44,12 +93,22 @@ const TimeOff = () => {
         </Button>
         <Divider sx={{ my: 2 }} />
         {requests.map((request) => (
-          <Paper key={request.id} sx={{ mb: 2, p: 2 }}>
-            <Typography variant="h6">{request.date}</Typography>
+          <Paper key={request.id} sx={{ mb: 2, p: 2, position: 'relative' }}>
+            <Typography variant="h6">
+              {request.requestDate ? new Date(request.requestDate).toLocaleDateString() : 'No Date'}
+            </Typography>
             <Typography variant="body1">{request.reason}</Typography>
             <Typography variant="body2" color="textSecondary">
-              Status: {request.status}
+              Status: {request.status || 'Pending'}
             </Typography>
+            <IconButton
+              edge="end"
+              aria-label="delete"
+              onClick={() => handleDelete(request.id)}
+              sx={{ position: 'absolute', top: 8, right: 8 }}
+            >
+              <DeleteIcon />
+            </IconButton>
           </Paper>
         ))}
 

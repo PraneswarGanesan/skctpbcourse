@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 import java.util.Arrays;
 import java.util.Collections;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/teams")
 public class TeamController {
@@ -29,12 +31,12 @@ public class TeamController {
         return enrichTeamsWithUsernames(teams);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Team> getTeamById(@PathVariable Long id) {
-        Optional<Team> team = teamService.getTeamById(id);
-        return team.map(t -> ResponseEntity.ok(enrichTeamWithUsernames(t)))
-                   .orElseGet(() -> ResponseEntity.notFound().build());
-    }
+        @GetMapping("/{id}")
+        public ResponseEntity<Team> getTeamById(@PathVariable Long id) {
+            Optional<Team> team = teamService.getTeamById(id);
+            return team.map(t -> ResponseEntity.ok(enrichTeamWithUsernames(t)))
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        }
 
     private Team enrichTeamWithUsernames(Team team) {
         User lead = teamService.getUserById(team.getLeadId());
@@ -89,6 +91,39 @@ public class TeamController {
     public List<User> getEmployees() {
         return teamService.getUsersByRoles(Collections.singletonList("employee"));
     }
+    // @GetMapping("/by-lead/{leadUsername}")
+    // public ResponseEntity<List<Team>> getTeamsByLeadUsername(@PathVariable String leadUsername) {
+    //     List<Team> teams = teamService.findTeamsByLeadUsername(leadUsername);
+    //     return ResponseEntity.ok(teams);
+    // }
+
+    // @GetMapping("/by-employee/{employeeUsername}")
+    // public ResponseEntity<List<Team>> getTeamsByEmployeeUsername(@PathVariable String employeeUsername) {
+    //     List<Team> teams = teamService.findTeamsByEmployeeUsername(employeeUsername);
+    //     return ResponseEntity.ok(teams);
+    // }
+    @GetMapping("/by-lead/{leadId}")
+    public ResponseEntity<List<Team>> getTeamsByLeadId(@PathVariable Long leadId) {
+        List<Team> teams = teamService.getTeamsByLeadId(leadId);
+        if (teams != null) {
+            List<Team> enrichedTeams = enrichTeamsWithUsernames(teams);
+            return ResponseEntity.ok(enrichedTeams);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    @GetMapping("/by-employee/{employeeId}")
+    public ResponseEntity<List<Team>> getTeamsByEmployeeId(@PathVariable Long employeeId) {
+        List<Team> teams = teamService.getTeamsByEmployeeId(employeeId);
+        if (teams != null) {
+            List<Team> enrichedTeams = enrichTeamsWithUsernames(teams);
+            return ResponseEntity.ok(enrichedTeams);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
     
     
 }

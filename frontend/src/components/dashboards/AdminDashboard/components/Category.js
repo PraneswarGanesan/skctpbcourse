@@ -95,9 +95,9 @@ const Category = () => {
                     <Typography variant="h6">{`${user.firstName} ${user.lastName}`}</Typography>
                     <Typography variant="body2">Role: {user.role}</Typography>
                     <Typography variant="body2">Email: {user.email}</Typography>
-                    <Button variant="contained" color="primary" onClick={() => handleEditClick(user)} sx={{ mt: 2 }}>
+                    {/* <Button variant="contained" color="primary" onClick={() => handleEditClick(user)} sx={{ mt: 2 }}>
                       Edit
-                    </Button>
+                    </Button> */}
                   </CardContent>
                 </Card>
               ))

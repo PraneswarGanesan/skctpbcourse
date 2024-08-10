@@ -5,235 +5,313 @@ import {
   Typography,
   Paper,
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   TextField,
   List,
   ListItem,
   ListItemText,
-  Autocomplete
+  Autocomplete,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from '@mui/material';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import TeamLeadSidePanel from '../TeamLeadSidePanel';
 
 const ShiftScheduling = () => {
-  const [employees, setEmployees] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [teams, setTeams] = useState([]);
   const [schedules, setSchedules] = useState([]);
-  const [openAssignDialog, setOpenAssignDialog] = useState(false);
-  const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-  const [newScheduleDate, setNewScheduleDate] = useState(new Date());
-  const [newScheduleTime, setNewScheduleTime] = useState('');
-  const [selectedSchedule, setSelectedSchedule] = useState(null);
+  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [newScheduleDateTime, setNewScheduleDateTime] = useState('');
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [employeeOptions, setEmployeeOptions] = useState([]);
+  const [editingSchedule, setEditingSchedule] = useState(null);
+  const [timeOffRequests, setTimeOffRequests] = useState([]);
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [status, setStatus] = useState('');
+  const [selectedRequestId, setSelectedRequestId] = useState(null);
+
+  const teamLeadId = localStorage.getItem('id');
 
   useEffect(() => {
-    // Fetch employees
-    const fetchEmployees = async () => {
+    const fetchTeams = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/employees/schedules');
-        setEmployees(response.data);
+        const response = await axios.get(`http://localhost:8080/api/teams/by-lead/${teamLeadId}`);
+        const teamsData = response.data;
+        setTeams(teamsData);
+
+        const allEmployees = teamsData.flatMap(team =>
+          team.memberUsernames.map((username, index) => ({
+            username,
+            id: team.memberIds[index],
+          }))
+        );
+        setEmployeeOptions(allEmployees);
       } catch (error) {
-        console.error('Error fetching employees:', error);
+        console.error('Error fetching teams:', error);
       }
     };
 
-    fetchEmployees();
-  }, []);
+    fetchTeams();
+  }, [teamLeadId]);
 
   useEffect(() => {
-    // Fetch schedules
     const fetchSchedules = async () => {
-      try {
-
-        const schedules = await Promise.all(
-          employees.map(async (employee) => {
-            const response = await axios.get(`http://localhost:8080/api/employees/schedules/${employee.id}`);
-            return response.data;
-          })
-        );
-        setSchedules(schedules);
-      } catch (error) {
-        console.error('Error fetching schedules:', error);
+      if (selectedTeam) {
+        try {
+          const response = await axios.get(`http://localhost:8080/api/schedules/employee/${selectedTeam.memberIds.join(',')}`);
+          setSchedules(response.data);
+        } catch (error) {
+          console.error('Error fetching schedules:', error);
+        }
       }
     };
 
     fetchSchedules();
-  }, [employees]);
+  }, [selectedTeam]);
 
-  const handleOpenAssignDialog = () => {
-    setOpenAssignDialog(true);
-  };
+  useEffect(() => {
+    if (selectedTeam && selectedTeam.memberUsernames) {
+      const employees = selectedTeam.memberUsernames.map((username, index) => ({
+        username,
+        id: selectedTeam.memberIds[index],
+      }));
+      setEmployeeOptions(employees);
+    } else {
+      setEmployeeOptions([]);
+    }
+  }, [selectedTeam]);
 
-  const handleCloseAssignDialog = () => {
-    setOpenAssignDialog(false);
-    setSelectedEmployee(null);
-    setNewScheduleDate(new Date());
-    setNewScheduleTime('');
-  };
+  useEffect(() => {
+    const fetchTimeOffRequests = async () => {
+      if (selectedEmployee) {
+        try {
+          const response = await axios.get(`http://localhost:8080/api/timeoffs/by-employee/${selectedEmployee.username}`);
+          setTimeOffRequests(response.data);
+        } catch (error) {
+          console.error('Error fetching time off requests:', error);
+        }
+      }
+    };
 
-  const handleOpenUpdateDialog = (schedule) => {
-    setSelectedSchedule(schedule);
-    setNewScheduleDate(new Date(schedule.scheduleDateTime));
-    setNewScheduleTime(schedule.scheduleDateTime.split('T')[1].split(':').join(':'));
-    setOpenUpdateDialog(true);
-  };
+    fetchTimeOffRequests();
+  }, [selectedEmployee]);
 
-  const handleCloseUpdateDialog = () => {
-    setOpenUpdateDialog(false);
-    setSelectedSchedule(null);
-    setNewScheduleDate(new Date());
-    setNewScheduleTime('');
-  };
-
-  const handleAssignSchedule = async () => {
-    if (selectedEmployee) {
+  const handleAddSchedule = async () => {
+    if (selectedTeam && selectedEmployee && newScheduleDateTime) {
       try {
-        const scheduleDateTime = new Date(`${newScheduleDate.toISOString().split('T')[0]}T${newScheduleTime}`).toISOString();
         const payload = {
           employeeId: selectedEmployee.id,
           employeeUsername: selectedEmployee.username,
-          scheduleDateTime
+          scheduleDateTime: newScheduleDateTime,
         };
 
-        const response = await axios.post('http://localhost:8080/api/employees/schedules', payload);
+        const response = await axios.post('http://localhost:8080/api/schedules', payload);
         setSchedules((prev) => [...prev, response.data]);
-        handleCloseAssignDialog();
+        setNewScheduleDateTime('');
+        setSelectedEmployee(null);
       } catch (error) {
-        console.error('Error assigning schedule:', error);
+        console.error('Error adding schedule:', error);
       }
+    } else {
+      alert('Please select an employee and set a schedule date and time.');
     }
   };
 
-  const handleUpdateSchedule = async () => {
-    if (selectedSchedule) {
+  const handleEditSchedule = async () => {
+    if (editingSchedule && newScheduleDateTime) {
       try {
-        const scheduleDateTime = new Date(`${newScheduleDate.toISOString().split('T')[0]}T${newScheduleTime}`).toISOString();
-        const payload = {
-          ...selectedSchedule,
-          scheduleDateTime
+        const updatedSchedule = {
+          ...editingSchedule,
+          scheduleDateTime: newScheduleDateTime,
         };
 
-        const response = await axios.put(`http://localhost:8080/api/employees/schedules/${selectedSchedule.id}`, payload);
-        setSchedules((prev) => prev.map((sched) => (sched.id === response.data.id ? response.data : sched)));
-        handleCloseUpdateDialog();
+        const response = await axios.put(`http://localhost:8080/api/schedules/${editingSchedule.id}`, updatedSchedule);
+        setSchedules((prev) =>
+          prev.map((sched) => (sched.id === editingSchedule.id ? response.data : sched))
+        );
+        setEditingSchedule(null);
+        setNewScheduleDateTime('');
       } catch (error) {
         console.error('Error updating schedule:', error);
       }
+    } else {
+      alert('Please set a schedule date and time.');
     }
   };
 
   const handleDeleteSchedule = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/api/employees/schedules/${id}`);
+      await axios.delete(`http://localhost:8080/api/schedules/${id}`);
       setSchedules((prev) => prev.filter((sched) => sched.id !== id));
     } catch (error) {
       console.error('Error deleting schedule:', error);
     }
   };
 
+  const handleOpenStatusDialog = (requestId) => {
+    setSelectedRequestId(requestId);
+    setStatusDialogOpen(true);
+  };
+
+  const handleStatusChange = async () => {
+    if (selectedRequestId && status) {
+      try {
+        const payload = { status };
+  
+        await axios.put(`http://localhost:8080/api/timeoffs/update-status/${selectedRequestId}`, payload, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+  
+        setTimeOffRequests((prev) =>
+          prev.map((req) =>
+            req.id === selectedRequestId ? { ...req, status } : req
+          )
+        );
+        setStatusDialogOpen(false);
+      } catch (error) {
+        console.error('Error updating time-off status:', error);
+      }
+    }
+  };
+  
+
   return (
     <Box sx={{ p: 3 }}>
+      <TeamLeadSidePanel />
       <Typography variant="h4" gutterBottom>
         Shift Scheduling
       </Typography>
-      <Button variant="contained" color="primary" onClick={handleOpenAssignDialog}>
-        Assign Schedule
-      </Button>
-      <Paper sx={{ p: 2, mt: 2 }}>
-        <Typography variant="h6">Employee Schedules</Typography>
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <Typography variant="h6">Teams</Typography>
         <List>
-          {schedules.map((schedule) => (
-            <ListItem key={schedule.id}>
+          {teams.map((team) => (
+            <ListItem
+              key={team.id}
+              button
+              onClick={() => setSelectedTeam(team)}
+            >
               <ListItemText
-                primary={`Employee: ${schedule.employeeUsername}`}
-                secondary={`Schedule: ${new Date(schedule.scheduleDateTime).toLocaleString()}`}
+                primary={`Team: ${team.name}`}
+                secondary={`Project: ${team.project.name} - Lead: ${team.leadUsername}`}
               />
-              <Button variant="outlined" onClick={() => handleOpenUpdateDialog(schedule)}>
-                Update
-              </Button>
-              <Button variant="outlined" color="error" onClick={() => handleDeleteSchedule(schedule.id)}>
-                Delete
-              </Button>
             </ListItem>
           ))}
         </List>
       </Paper>
-      <Dialog open={openAssignDialog} onClose={handleCloseAssignDialog}>
-        <DialogTitle>Assign Schedule</DialogTitle>
-        <DialogContent>
+
+      {selectedTeam && (
+        <Paper sx={{ p: 2, mb: 2 }}>
+          <Typography variant="h6">Add/Edit Schedule</Typography>
+          <br></br>
+          <TextField
+            label="Schedule Date & Time"
+            type="datetime-local"
+            value={newScheduleDateTime}
+            onChange={(e) => setNewScheduleDateTime(e.target.value)}
+            fullWidth
+            sx={{ mb: 2 }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
           <Autocomplete
-            options={employees}
-            getOptionLabel={(option) => option.username || ''}
-            value={selectedEmployee}
-            onChange={(event, newValue) => setSelectedEmployee(newValue)}
+            options={employeeOptions}
+            getOptionLabel={(option) => option.username}
+            onChange={(event, value) => {
+              if (value) {
+                setSelectedEmployee(value);
+              } else {
+                setSelectedEmployee(null);
+              }
+            }}
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Employee Username"
+                label="Select Employee"
                 variant="outlined"
                 fullWidth
-                sx={{ mt: 2 }}
               />
             )}
+            sx={{ mb: 2 }}
           />
-          <Typography variant="body1">Selected Date: {newScheduleDate.toDateString()}</Typography>
-          <TextField
-            label="Time"
-            type="time"
-            value={newScheduleTime}
-            onChange={(e) => setNewScheduleTime(e.target.value)}
-            fullWidth
-            sx={{ mt: 2 }}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseAssignDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleAssignSchedule} color="primary" disabled={!selectedEmployee || !newScheduleTime}>
-            Assign
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog open={openUpdateDialog} onClose={handleCloseUpdateDialog}>
-        <DialogTitle>Update Schedule</DialogTitle>
+          {editingSchedule ? (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleEditSchedule}
+            >
+              Update Schedule
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddSchedule}
+            >
+              Add Schedule
+            </Button>
+          )}
+        </Paper>
+      )}
+
+      {selectedEmployee && (
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="h6">Time-Off Requests</Typography>
+          <List>
+            {timeOffRequests.map((request) => (
+              <ListItem key={request.id}>
+                <ListItemText
+                  primary={`Employee: ${request.employeeName || 'Unknown'}`}
+                  secondary={`Reason: ${request.reason || 'Unknown'} - Status: ${request.status || 'Pending'} - Requested At: ${request.requestDate ? new Date(request.requestDate).toLocaleString() : 'Unknown'}`}
+                />
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => handleOpenStatusDialog(request.id)}
+                  sx={{ mr: 1 }}
+                >
+                  Update Status
+                </Button>
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
+      )}
+
+      <Dialog
+        open={statusDialogOpen}
+        onClose={() => setStatusDialogOpen(false)}
+      >
+        <DialogTitle>Update Time-Off Status</DialogTitle>
         <DialogContent>
-          <Typography variant="body1">Employee: {selectedSchedule?.employeeUsername}</Typography>
-          <Typography variant="body1">Current Date: {new Date(selectedSchedule?.scheduleDateTime).toDateString()}</Typography>
-          <TextField
-            label="Date"
-            type="date"
-            value={newScheduleDate.toISOString().split('T')[0]}
-            onChange={(e) => setNewScheduleDate(new Date(e.target.value))}
-            fullWidth
-            sx={{ mt: 2 }}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-          <TextField
-            label="Time"
-            type="time"
-            value={newScheduleTime}
-            onChange={(e) => setNewScheduleTime(e.target.value)}
-            fullWidth
-            sx={{ mt: 2 }}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
+          <FormControl component="fieldset">
+            <RadioGroup
+              aria-label="status"
+              name="status"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              <FormControlLabel value="approved" control={<Radio />} label="Approved" />
+              <FormControlLabel value="denied" control={<Radio />} label="Denied" />
+              <FormControlLabel value="pending" control={<Radio />} label="Pending" />
+            </RadioGroup>
+          </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseUpdateDialog} color="primary">
+          <Button onClick={() => setStatusDialogOpen(false)} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleUpdateSchedule} color="primary" disabled={!selectedSchedule || !newScheduleTime}>
-            Update
+          <Button onClick={handleStatusChange} color="primary">
+            Save
           </Button>
         </DialogActions>
       </Dialog>

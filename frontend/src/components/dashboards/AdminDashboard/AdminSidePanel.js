@@ -40,10 +40,10 @@ const AdminSidePanel = () => {
           <ListItemIcon><People /></ListItemIcon>
           <ListItemText primary="Manage Users" />
         </ListItem>
-        <ListItem button component={Link} to="/admin-dashboard/category">
+        {/* <ListItem button component={Link} to="/admin-dashboard/category">
           <ListItemIcon><CategoryIcon /></ListItemIcon>
           <ListItemText primary="Category" />
-        </ListItem>
+        </ListItem> */}
         <ListItem button component={Link} to="/admin-dashboard/message">
           <ListItemIcon><MessageIcon /></ListItemIcon>
           <ListItemText primary="Message" />

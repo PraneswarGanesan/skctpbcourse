@@ -11,6 +11,8 @@
 
         private Long teamLeadId;
         private Long employeeId;
+        private String teamleadusername;
+        private String employeeusername;
         private String taskName;
         private String date;
         private String time;
