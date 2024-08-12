@@ -115,7 +115,9 @@ const Signup = () => {
               onChange={handleChange}
               required
             />
-            <FormControl fullWidth variant="outlined" margin="normal">
+            <br></br>
+          <div className="formcont">
+          <FormControl fullWidth variant="outlined" margin="normal" className='signup-inputrole'  sx={{ width: '300px', height: '50px', mb: '2px' }} >
               <InputLabel>Role</InputLabel>
               <Select
                 value={form.role}
@@ -130,6 +132,7 @@ const Signup = () => {
                 <MenuItem value="product_manager">Product Manager</MenuItem>
               </Select>
             </FormControl>
+          </div>
             {error && (
               <Typography color='error' variant='body2'>{error}</Typography>
             )}

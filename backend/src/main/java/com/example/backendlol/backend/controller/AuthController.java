@@ -6,6 +6,7 @@ import com.example.backendlol.backend.model.User;
 import com.example.backendlol.backend.service.JwtService;
 import com.example.backendlol.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,15 +65,22 @@ public ResponseEntity<?> loginUser(@RequestBody User user) {
         return userOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestBody User user) {
+    @PutMapping("/users/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User user) {
         try {
-            User updatedUser = userService.updateUser(user);
+            User updatedUser = userService.updateUser(id, user);
             return ResponseEntity.ok(updatedUser);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    
+
+    
+
+
 
     @PostMapping("/verify")
 public ResponseEntity<?> verifyToken(@RequestBody TokenRequest tokenRequest) {

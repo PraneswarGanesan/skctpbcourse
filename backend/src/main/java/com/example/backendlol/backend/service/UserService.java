@@ -51,23 +51,38 @@ public class UserService implements UserDetailsService {
         return userRepository.findById(id);
     }
 
-    public User updateUser(User user) {
-        Optional<User> existingUserOptional = userRepository.findById(user.getId());
+    public User updateUser(Long id, User user) {
+        Optional<User> existingUserOptional = userRepository.findById(id);
         if (existingUserOptional.isPresent()) {
             User existingUser = existingUserOptional.get();
-            // Update fields except password
-            existingUser.setUsername(user.getUsername());
-            existingUser.setEmail(user.getEmail());
-            existingUser.setRole(user.getRole());
-            // Hash the new password if it's being updated
+            
+            // Update fields conditionally
+            if (user.getUsername() != null) {
+                if (userRepository.findByUsername(user.getUsername())
+                        .filter(u -> !u.getId().equals(id))  // Ensure the check excludes the current user
+                        .isPresent()) {
+                    throw new RuntimeException("Username already in use");
+                }
+                existingUser.setUsername(user.getUsername());
+            }
+            
+            if (user.getEmail() != null) {
+                existingUser.setEmail(user.getEmail());
+            }
+    
             if (user.getPassword() != null && !user.getPassword().isEmpty()) {
                 existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
             }
+    
             return userRepository.save(existingUser);
         } else {
-            throw new RuntimeException("User not found with id: " + user.getId());
+            throw new RuntimeException("User not found with id: " + id);
         }
     }
+    
+    
+    
+    
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

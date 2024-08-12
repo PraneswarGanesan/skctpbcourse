@@ -10,7 +10,6 @@ import {
   ListItem,
   ListItemText,
   Autocomplete,
-  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -20,8 +19,6 @@ import {
   FormControlLabel,
   Radio,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import TeamLeadSidePanel from '../TeamLeadSidePanel';
 
 const ShiftScheduling = () => {
@@ -63,18 +60,57 @@ const ShiftScheduling = () => {
 
   useEffect(() => {
     const fetchSchedules = async () => {
-      if (selectedTeam) {
+      if (selectedEmployee) {
         try {
-          const response = await axios.get(`http://localhost:8080/api/schedules/employee/${selectedTeam.memberIds.join(',')}`);
+          const token = localStorage.getItem('token'); // Retrieve token from local storage
+    
+          if (!token) {
+            console.error('No token found in local storage');
+            return;
+          }
+    
+          const response = await axios.get(`http://localhost:8080/api/schedules/username/${selectedEmployee.username}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+            },
+          });
+    
+          console.log('Fetched schedules:', response.data); // Log response data for debugging
           setSchedules(response.data);
         } catch (error) {
-          console.error('Error fetching schedules:', error);
+          console.error('Error fetching schedules:', error.response ? error.response.data : error.message);
         }
       }
     };
+    
+    
 
     fetchSchedules();
-  }, [selectedTeam]);
+  }, [selectedEmployee]);
+
+  useEffect(() => {
+    const fetchTimeOffRequests = async () => {
+      if (selectedEmployee) {
+        try {
+          const token = localStorage.getItem('token'); // Ensure token is stored in localStorage
+          const response = await axios.get(`http://localhost:8080/api/timeoffs/by-employee/${selectedEmployee.username}`, {
+           
+            headers: {
+              'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+            },
+          });
+          console.log(selectedEmployee.username);
+          setTimeOffRequests(response.data);
+        } catch (error) {
+          console.error('Error fetching time off requests:', error);
+          // You might want to handle specific cases here, such as redirecting to a login page if the token is invalid
+        }
+      }
+    };
+    
+
+    fetchTimeOffRequests();
+  }, [selectedEmployee]);
 
   useEffect(() => {
     if (selectedTeam && selectedTeam.memberUsernames) {
@@ -88,23 +124,8 @@ const ShiftScheduling = () => {
     }
   }, [selectedTeam]);
 
-  useEffect(() => {
-    const fetchTimeOffRequests = async () => {
-      if (selectedEmployee) {
-        try {
-          const response = await axios.get(`http://localhost:8080/api/timeoffs/by-employee/${selectedEmployee.username}`);
-          setTimeOffRequests(response.data);
-        } catch (error) {
-          console.error('Error fetching time off requests:', error);
-        }
-      }
-    };
-
-    fetchTimeOffRequests();
-  }, [selectedEmployee]);
-
   const handleAddSchedule = async () => {
-    if (selectedTeam && selectedEmployee && newScheduleDateTime) {
+    if (selectedEmployee && newScheduleDateTime) {
       try {
         const payload = {
           employeeId: selectedEmployee.id,
@@ -146,10 +167,10 @@ const ShiftScheduling = () => {
     }
   };
 
-  const handleDeleteSchedule = async (id) => {
+  const handleDeleteSchedule = async (scheduleId) => {
     try {
-      await axios.delete(`http://localhost:8080/api/schedules/${id}`);
-      setSchedules((prev) => prev.filter((sched) => sched.id !== id));
+      await axios.delete(`http://localhost:8080/api/schedules/${scheduleId}`);
+      setSchedules((prev) => prev.filter((sched) => sched.id !== scheduleId));
     } catch (error) {
       console.error('Error deleting schedule:', error);
     }
@@ -164,13 +185,13 @@ const ShiftScheduling = () => {
     if (selectedRequestId && status) {
       try {
         const payload = { status };
-  
+
         await axios.put(`http://localhost:8080/api/timeoffs/update-status/${selectedRequestId}`, payload, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
-  
+
         setTimeOffRequests((prev) =>
           prev.map((req) =>
             req.id === selectedRequestId ? { ...req, status } : req
@@ -182,7 +203,6 @@ const ShiftScheduling = () => {
       }
     }
   };
-  
 
   return (
     <Box sx={{ p: 3 }}>
@@ -190,6 +210,8 @@ const ShiftScheduling = () => {
       <Typography variant="h4" gutterBottom>
         Shift Scheduling
       </Typography>
+
+      {/* Team Details */}
       <Paper sx={{ p: 2, mb: 2 }}>
         <Typography variant="h6">Teams</Typography>
         <List>
@@ -208,9 +230,34 @@ const ShiftScheduling = () => {
         </List>
       </Paper>
 
-      {selectedTeam && (
+      {/* Select Employee */}
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <Typography variant="h6">Select Employee</Typography>
+        <br></br>
+        <Autocomplete
+          options={employeeOptions}
+          getOptionLabel={(option) => option.username}
+          onChange={(event, value) => {
+            setSelectedEmployee(value || null);
+            setNewScheduleDateTime('');
+            setEditingSchedule(null);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Select Employee"
+              variant="outlined"
+              fullWidth
+            />
+          )}
+        />
+      </Paper>
+
+      {/* Assign Schedule */}
+      {selectedEmployee && (
         <Paper sx={{ p: 2, mb: 2 }}>
-          <Typography variant="h6">Add/Edit Schedule</Typography>
+          <Typography variant="h6">Assign Schedule</Typography>
+
           <br></br>
           <TextField
             label="Schedule Date & Time"
@@ -222,26 +269,6 @@ const ShiftScheduling = () => {
             InputLabelProps={{
               shrink: true,
             }}
-          />
-          <Autocomplete
-            options={employeeOptions}
-            getOptionLabel={(option) => option.username}
-            onChange={(event, value) => {
-              if (value) {
-                setSelectedEmployee(value);
-              } else {
-                setSelectedEmployee(null);
-              }
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Select Employee"
-                variant="outlined"
-                fullWidth
-              />
-            )}
-            sx={{ mb: 2 }}
           />
           {editingSchedule ? (
             <Button
@@ -263,56 +290,93 @@ const ShiftScheduling = () => {
         </Paper>
       )}
 
+      {/* Time-Off Requests */}
       {selectedEmployee && (
-        <Paper sx={{ p: 2 }}>
+        <Paper sx={{ p: 2, mb: 2 }}>
           <Typography variant="h6">Time-Off Requests</Typography>
           <List>
-            {timeOffRequests.map((request) => (
-              <ListItem key={request.id}>
-                <ListItemText
-                  primary={`Employee: ${request.employeeName || 'Unknown'}`}
-                  secondary={`Reason: ${request.reason || 'Unknown'} - Status: ${request.status || 'Pending'} - Requested At: ${request.requestDate ? new Date(request.requestDate).toLocaleString() : 'Unknown'}`}
-                />
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => handleOpenStatusDialog(request.id)}
-                  sx={{ mr: 1 }}
-                >
-                  Update Status
-                </Button>
+            {timeOffRequests.length ? (
+              timeOffRequests.map((request) => (
+                <ListItem key={request.id}>
+                  <ListItemText
+                    secondary={`Status: ${request.status} - Requested Time: ${request.requestDate}`}
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleOpenStatusDialog(request.id)}
+                    sx={{ ml: 2 }}
+                  >
+                    Change Status
+                  </Button>
+                </ListItem>
+              ))
+            ) : (
+              <ListItem>
+                <ListItemText primary="No time-off requests available." />
               </ListItem>
-            ))}
+            )}
           </List>
         </Paper>
       )}
 
-      <Dialog
-        open={statusDialogOpen}
-        onClose={() => setStatusDialogOpen(false)}
-      >
-        <DialogTitle>Update Time-Off Status</DialogTitle>
+      {/* Existing Schedules */}
+      {selectedEmployee && (
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="h6">Existing Schedules</Typography>
+          {schedules.length ? (
+            <List>
+              {schedules.map((schedule) => (
+                <ListItem key={schedule.id}>
+                  <ListItemText
+                    primary={`Schedule Date & Time: ${schedule.scheduleDateTime}`}
+                  />
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => {
+                      setEditingSchedule(schedule);
+                      setNewScheduleDateTime(schedule.scheduleDateTime);
+                    }}
+                    sx={{ ml: 2 }}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => handleDeleteSchedule(schedule.id)}
+                    sx={{ ml: 1 }}
+                  >
+                    Delete
+                  </Button>
+                </ListItem>
+              ))}
+            </List>
+          ) : (
+            <Typography>No existing schedules.</Typography>
+          )}
+        </Paper>
+      )}
+
+      {/* Dialog for Changing Time-Off Status */}
+      <Dialog open={statusDialogOpen} onClose={() => setStatusDialogOpen(false)}>
+        <DialogTitle>Change Time-Off Request Status</DialogTitle>
         <DialogContent>
-          <FormControl component="fieldset">
+          <FormControl>
             <RadioGroup
-              aria-label="status"
-              name="status"
               value={status}
               onChange={(e) => setStatus(e.target.value)}
             >
-              <FormControlLabel value="approved" control={<Radio />} label="Approved" />
-              <FormControlLabel value="denied" control={<Radio />} label="Denied" />
-              <FormControlLabel value="pending" control={<Radio />} label="Pending" />
+              <FormControlLabel value="Approved" control={<Radio />} label="Approved" />
+              <FormControlLabel value="Rejected" control={<Radio />} label="Rejected" />
+              <FormControlLabel value="Pending" control={<Radio />} label="Pending" />
             </RadioGroup>
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setStatusDialogOpen(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleStatusChange} color="primary">
-            Save
-          </Button>
+          <Button onClick={() => setStatusDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleStatusChange}>Save</Button>
         </DialogActions>
       </Dialog>
     </Box>
