@@ -59,7 +59,6 @@ public class EmployeeTaskController {
     }
     @PutMapping("/{id}/status/{status}")
     public ResponseEntity<EmployeeTask> updateTaskStatus(  @PathVariable Long id,  @PathVariable String status) {
-        // Validate the status value
         if (status == null || status.isEmpty()) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -76,6 +75,6 @@ public class EmployeeTaskController {
     @GetMapping("/team-lead/{teamLeadId}")
     public ResponseEntity<List<EmployeeTask>> getTasksByTeamLeadId(@PathVariable Long teamLeadId) {
         List<EmployeeTask> tasks = employeeTaskService.getTasksByTeamLeadId(teamLeadId);
-        return ResponseEntity.ok(tasks); // Add this endpoint
+        return ResponseEntity.ok(tasks); 
     }
 }

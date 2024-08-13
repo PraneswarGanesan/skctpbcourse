@@ -47,7 +47,7 @@ public class EmployeeTimeoffController {
         Optional<EmployeeTimeoff> existingRequest = employeeTimeoffRepository.findById(id);
         if (existingRequest.isPresent()) {
             EmployeeTimeoff request = existingRequest.get();
-            request.setStatus(statusUpdate.getStatus()); // Update only status
+            request.setStatus(statusUpdate.getStatus()); 
             EmployeeTimeoff updatedRequest = employeeTimeoffRepository.save(request);
             return ResponseEntity.ok(updatedRequest);
         } else {

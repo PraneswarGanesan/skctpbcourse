@@ -26,7 +26,7 @@ public class UserService implements UserDetailsService {
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("employee"); // Default role if not specified
+            user.setRole("employee");
         }
         return userRepository.save(user);
     }
@@ -56,10 +56,10 @@ public class UserService implements UserDetailsService {
         if (existingUserOptional.isPresent()) {
             User existingUser = existingUserOptional.get();
             
-            // Update fields conditionally
+        
             if (user.getUsername() != null) {
                 if (userRepository.findByUsername(user.getUsername())
-                        .filter(u -> !u.getId().equals(id))  // Ensure the check excludes the current user
+                        .filter(u -> !u.getId().equals(id)) 
                         .isPresent()) {
                     throw new RuntimeException("Username already in use");
                 }

@@ -12,7 +12,7 @@ public class TimeOffRequest {
     private Long teamLeadId;
     private String teamLeadName;
     private String reason;
-    private String status; // e.g., "pending", "approved", "rejected"
+    private String status;
     private LocalDate requestDate;
     public Long getId() {
         return id;

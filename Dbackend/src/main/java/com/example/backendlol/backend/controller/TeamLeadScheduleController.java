@@ -13,16 +13,16 @@ import java.util.List;
 public class TeamLeadScheduleController {
 
     @Autowired
-    private TeamLeadScheduleService teamLeadScheduleService; // Service for business logic
+    private TeamLeadScheduleService teamLeadScheduleService; 
 
-    // Endpoint to fetch all team leads
+  
     @GetMapping("/team_leads")
     public ResponseEntity<List<User>> getAllTeamLeads() {
         List<User> teamLeads = teamLeadScheduleService.getAllTeamLeads();
         return ResponseEntity.ok(teamLeads);
     }
 
-    // Endpoint to get the schedule of a specific team lead
+  
     @GetMapping("/schedule/{teamLeadId}")
     public ResponseEntity<List<TeamLeadSchedule>> getTeamLeadSchedule(@PathVariable Long teamLeadId) {
         List<TeamLeadSchedule> schedules = teamLeadScheduleService.getSchedulesForTeamLead(teamLeadId);

@@ -22,5 +22,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     
     @Query("SELECT COUNT(u) FROM User u WHERE u.role = :role")
     long countByRole(@Param("role") String role);
-    List<User> findTop10ByOrderByCreatedDateDesc(); // Adjust as needed
+    List<User> findTop10ByOrderByCreatedDateDesc(); 
 }

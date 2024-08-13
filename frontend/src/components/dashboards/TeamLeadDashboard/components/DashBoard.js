@@ -185,7 +185,7 @@ const Dashboard = () => {
           <Typography variant="body1">No time off requests found.</Typography>
         )}
 
-        {/* Time Off Request Dialog */}
+      
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>Request Time Off</DialogTitle>
           <DialogContent>

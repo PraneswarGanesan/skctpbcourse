@@ -13,7 +13,7 @@ public class EmployeeTimeoff {
     private Long employeeId;
     private String employeeName;
     private String reason;
-    private String status; // e.g., "pending", "approved", "rejected"
+    private String status; 
     private LocalDate requestDate;
     public Long getId() {
         return id;

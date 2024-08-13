@@ -14,7 +14,7 @@ public class ContactMessage {
         private String email;
         private String message;
 
-    // Getters and setters
+   
 
     public Long getId() {
         return id;

@@ -18,9 +18,7 @@
         private String time;
 
         @Column(nullable = false)
-        private String status = "Not Started"; // Default value
-
-        // Getters and Setters
+        private String status = "Not Started"; 
 
         public Long getId() {
             return id;

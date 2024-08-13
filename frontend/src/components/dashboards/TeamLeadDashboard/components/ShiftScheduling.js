@@ -92,18 +92,17 @@ const ShiftScheduling = () => {
     const fetchTimeOffRequests = async () => {
       if (selectedEmployee) {
         try {
-          const token = localStorage.getItem('token'); // Ensure token is stored in localStorage
+          const token = localStorage.getItem('token');
           const response = await axios.get(`http://localhost:8080/api/timeoffs/by-employee/${selectedEmployee.username}`, {
            
             headers: {
-              'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+              'Authorization': `Bearer ${token}`,
             },
           });
           console.log(selectedEmployee.username);
           setTimeOffRequests(response.data);
         } catch (error) {
           console.error('Error fetching time off requests:', error);
-          // You might want to handle specific cases here, such as redirecting to a login page if the token is invalid
         }
       }
     };

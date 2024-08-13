@@ -9,10 +9,8 @@ import java.util.List;
 @Repository
 public interface EmployeeScheduleRepository extends JpaRepository<EmployeeSchedule, Long> {
 
-    // Custom query to find schedules by employee ID
     List<EmployeeSchedule> findByEmployeeId(Long employeeId);
 
-    // Custom query to find schedules by employee username
     List<EmployeeSchedule> findByEmployeeUsername(String employeeUsername);
 
 }
